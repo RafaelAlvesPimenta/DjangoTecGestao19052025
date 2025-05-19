@@ -1,0 +1,185 @@
+from django.db import models
+import uuid
+from django.utils import timezone
+from datetime import timedelta
+from django.core.validators import MinValueValidator
+from django.core.exceptions import ValidationError
+
+
+
+class Usuario(models.Model):
+    nome = models.CharField(max_length=100, unique=True)
+    senha = models.CharField(max_length=100)
+    email = models.EmailField(max_length=150, unique=True)
+    cpf_cnpj = models.CharField(max_length=20, unique=True)
+    telefone = models.CharField(max_length=20, unique=True)
+
+    def __str__(self):
+        return self.nome
+
+class PasswordResetToken(models.Model):
+    usuario = models.ForeignKey(Usuario, on_delete=models.CASCADE)
+    token = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def is_valid(self):
+        return timezone.now() < self.created_at + timedelta(minutes=30)
+
+# class Estoque(models.Model):
+#     nome = models.CharField(max_length=150, unique=True)
+#     categoria = models.CharField(max_length=150, unique=True)
+#     quantidade = models.IntegerField(validators=[MinValueValidator(0)])
+#     quantidadeMinima = models.IntegerField()
+    # preco = models.DecimalField(
+    # max_digits=10,
+    # decimal_places=2,
+    # validators=[MinValueValidator(1)]
+    # )
+    # descricao = models.CharField(max_length=250)
+    # imagem = models.ImageField(upload_to='imagens_user/')
+    
+#     def clean(self):
+#         super().clean()
+#         if self.quantidade < self.quantidadeMinima:
+#             raise ValidationError({
+#                 'quantidade': 'A quantidade atual não pode ser menor que a quantidade mínima.'
+#             })
+
+class categorias(models.Model):
+    nome = models.CharField(max_length=50, unique=True)
+    
+    class Meta:
+        db_table = "categorias"
+        managed = False
+
+class Item(models.Model):
+    id = models.AutoField(primary_key=True) 
+    nome = models.CharField(max_length=100, unique=True)
+    quantidade = models.IntegerField(
+    validators=[MinValueValidator(0)]
+    )
+    quantidade_minima = models.IntegerField(
+        validators=[MinValueValidator(0)]
+    )
+    quantidade_maxima = models.IntegerField(
+        default=0,
+        validators=[MinValueValidator(2)]
+    ) 
+    categoria = models.ForeignKey(
+        categorias,
+        to_field='nome',      
+        db_column='categoria',
+        on_delete=models.PROTECT,
+    )
+    img_produto = models.ImageField(upload_to='imagens_produtos/')
+    descricao = models.CharField(max_length=250)
+    preco = models.DecimalField(
+    max_digits=10,
+    decimal_places=2,
+    validators=[MinValueValidator(1)]
+    )
+
+    def em_falta(self):
+        return self.quantidade == 0
+
+    def precisa_repor(self):
+        return self.quantidade <= self.quantidade_minima
+    
+    class Meta:
+        db_table = "Estoque"
+
+
+class MateriaisUsados(models.Model):
+    material = models.ForeignKey(Item, on_delete=models.PROTECT)
+    quantidade = models.IntegerField()
+
+    class Meta:
+        db_table = "materiais_usados"
+        managed = False  
+
+class Produto(models.Model):
+    nome = models.CharField(max_length=255, unique=True)
+    descricao = models.TextField()
+    preco = models.FloatField()
+    quantidade = models.IntegerField()
+    categoria = models.ForeignKey(
+        categorias,
+        to_field='nome',
+        db_column='categoria',
+        on_delete=models.PROTECT,
+        default='Sem Categoria',
+    )
+
+
+    class Meta:
+        db_table = "Produto"
+        
+
+    def __str__(self):
+        return self.nome
+
+class Producao(models.Model):
+    nome = models.CharField(max_length=255)
+
+    produto = models.ForeignKey(
+        Produto,
+        on_delete=models.CASCADE,
+        related_name='producoes'
+    )
+
+    materiais = models.ForeignKey(
+        Item,
+        db_column='materiais_id',
+        on_delete=models.PROTECT
+    )
+
+    descricao = models.TextField()
+    moldes = models.TextField(blank=True, null=True)
+
+    categoria = models.ForeignKey(
+        categorias,
+        to_field='nome',
+        on_delete=models.PROTECT
+    )
+
+    observacoes = models.TextField(blank=True, null=True)
+    tamanho = models.CharField(max_length=50)
+
+    class Meta:
+        db_table = 'Producao'
+
+class Clientes(models.Model):
+    nome = models.CharField(max_length=255, unique=True)
+    email = models.EmailField()
+    telefone = models.CharField(max_length=20)
+    CPF = models.CharField(max_length=14)  # Formato típico: 000.000.000-00
+
+    class Meta:
+        db_table = "Clientes"
+
+    def __str__(self):
+        return self.nome
+
+class Vendas(models.Model):
+    valor = models.FloatField(db_column='Valor')
+    comprador = models.ForeignKey(
+        Clientes,  # nome do modelo relacionado
+        on_delete=models.PROTECT,
+        db_column='comprador_id',
+        related_name='vendas_por_id'
+    )
+    comprador_nome = models.ForeignKey(
+        Clientes,
+        to_field='nome',
+        on_delete=models.PROTECT,
+        db_column='comprador_nome',
+        related_name='vendas_por_nome'
+    )
+    data = models.DateTimeField(auto_now_add=True)  # equivale ao DEFAULT CURRENT_TIMESTAMP
+
+    class Meta:
+        db_table = "Vendas"
+
+    def __str__(self):
+        return f"Venda {self.id} - Comprador: {self.comprador_nome} - Valor: {self.valor}"
+    

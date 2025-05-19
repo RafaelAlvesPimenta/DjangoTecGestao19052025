@@ -1,0 +1,87 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static 'CSS/planilhas.css'%}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <title>Planilhas</title>
+</head>
+<body>
+
+
+
+    <nav class="menu-lateral">
+        <div class="bnt-expandir">
+            <i class="bi bi-list"></i>
+        </div>
+    
+        <ul>
+            <li class="item-menu">
+                <a href="{% url 'home' %}">
+                    <span class="icon"><i class="bi bi-house"></i></span>
+                    <span class="txt-link">Inicio</span>
+                </a>
+            </li>
+            <li class="item-menu">
+                <a href="#">
+                    <span class="icon"><i class="bi bi-collection"></i></span>
+                    <span class="txt-link">Planilhas</span>
+                </a>
+            </li>
+            <li class="item-menu">
+                <a href="{% url 'Estoque' %}">
+                    <span class="icon"><i class="bi bi-box-seam"></i></span>
+                    <span class="txt-link">Estoque</span>
+                </a>
+            </li>
+            <li class="item-menu">
+                <a href="{% url 'Produtos' %}">
+                    <span class="icon"><i class="bi bi-cart3"></i></span>
+                    <span class="txt-link">Produtos</span>
+                </a>
+            </li>
+            <li class="item-menu">
+                <a href="{% url 'Vendas' %}">
+                    <span class="icon"><i class="bi bi-coin"></i></span>
+                    <span class="txt-link">Vendas</span>
+                </a>
+            </li>
+        </ul>
+    
+        <div>
+            <div></div>
+        </div>
+    </nav>
+    
+
+    <div class="area-principal">
+        <button id="ad-planilha" class="adicionar-planilha"> 
+            <i id="iconMais" class="bi bi-plus-square"></i> 
+        </button>
+    
+        <div id="lista-planilhas"></div>
+    </div>
+    
+    <div id="window-new-spreadsheet">
+        <div class="window-spreadsheet">
+            <form action="" class="form-imgs">
+                <label class="upload-btn">
+                    <i class="bi bi-upload"></i> Escolher arquivo
+                    <input type="file" id="fileInput" accept=".xlsx" hidden>
+                </label>
+            </form>
+            
+    
+            <input class="inputs-wspreadsheet" type="text" placeholder="Titulo">
+            <button class="buttons-wspreadsheet" id="save-nspreadsheet">salvar</button>
+            <button class="buttons-wspreadsheet" id="cancel-nspreadsheet">cancelar</button>
+        </div>
+    </div>
+    
+
+    <script src="{% static 'JSs/planilhas.js'%}"></script>
+
+</body>
+</html>

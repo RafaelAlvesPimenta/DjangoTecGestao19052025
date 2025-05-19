@@ -1,0 +1,76 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Tela de Login</title>
+  <link rel="icon" href="./imagens/icon logo TecGestão.png" type="image/x-icon" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500&display=swap">
+  <link rel="stylesheet" href="{% static 'CSS/Login.css' %}" />
+</head>
+<body>
+  <div class="Container">
+    <form id="form_login" name="form_login" method="post">
+      {% csrf_token %}
+      {% if messages %}
+          {% for message in messages %}
+              <li class="{{ message.tags }}">{{ message }}</li>
+          {% endfor %}
+      {% endif %}
+    
+      <h1>LOGIN</h1>
+      <div>
+        <img class="logo-tipo" width="90px" height="90px" src="./imagens/Imagem_TecGestão-removebg-preview (3).png" alt="Logo" />
+      </div>
+    
+      <div class="input-container">
+        <input placeholder="Usuario" name="nome" type="text" required />
+        <img width="20" height="20" src="https://img.icons8.com/ios/50/user--v1.png" class="user-icon" />
+      </div>
+    
+      <div class="input-container">
+        <input placeholder="CPF/CNPJ" name="cpf_cnpj" type="text" required />
+        <img width="20" height="20" src="./imagens/1176652.png" class="lock-icon" />
+      </div>
+    
+      <div class="input-container">
+        <input placeholder="Senha" name="senha" type="password" required />
+        <img width="20" height="20" src="https://img.icons8.com/ios/50/lock--v1.png" class="lock-icon" />
+        <a href="#" id="openModal">Esqueci Minha Senha</a>
+      </div>
+    
+      <button type="submit" class="submit-button" name="form_login">
+        Entrar
+      </button>
+    
+      <div class="Register-link">
+        <p>Não Está cadastrado? <a href="{% url 'cadastro' %}">Cadastrar</a></p>
+      </div>
+    </form>
+  </div>
+
+<div id="forgotModal" class="modal">
+  <form method="post" id="form_resetpassword" name="form_resetpassword">
+    {% csrf_token %}
+    <div class="modal-content">
+      <span class="close" id="closeModal">&times;</span>
+      <h2>Recuperar Senha</h2>
+      <p>Escolha onde deseja receber o código de recuperação:</p>
+  
+      <div class="option-select">
+        <label><input type="radio" name="recuperacao" value="email" checked /> E-mail (Gmail)</label><br>
+        <label><input type="radio" name="recuperacao" value="telefone" /> Telefone (SMS)</label>
+      </div>
+  
+      <input type="text" name="email" id="contatoRecuperacao" placeholder="Digite seu e-mail ou telefone" class="modal-input" />
+  
+      <button name="form_resetpassword" type="submit" class="modal-button" id="enviarCodigo">Enviar Link</button>
+    </div>
+  </form>
+  </div>
+
+
+  <script src="{% static 'JSs/login.js' %}"></script>
+</body>
+</html>

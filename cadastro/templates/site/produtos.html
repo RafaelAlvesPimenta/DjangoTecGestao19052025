@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Roupas Prontas</title>
+    <link rel="stylesheet" href="produto.css">
+    <link rel="stylesheet" href="botao-flutuante.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+    <link rel="icon" href="./imagens/icon logo TecGestão.png" type="image/x-icon">
+</head>
+<body>
+    <nav class="menu-lateral">
+        <div class="bnt-expandir">
+            <i class="bi bi-list"></i>
+        </div>
+        <ul>
+            <li class="item-menu"><a href="Telainicial.html"><span class="icon"><i class="bi bi-house"></i></span><span class="txt-link">Início</span></a></li>
+            <li class="item-menu"><a href="planilhas.html"><span class="icon"><i class="bi bi-collection"></i></span><span class="txt-link">Planilhas</span></a></li>
+            <li class="item-menu"><a href="Estoque.html"><span class="icon"><i class="bi bi-box-seam"></i></span><span class="txt-link">Estoque</span></a></li>
+            <li class="item-menu"><a href="#"><span class="icon"><i class="bi bi-cart3"></i></span><span class="txt-link">Produtos</span></a></li>
+            <li class="item-menu"><a href="Vendas.html"><span class="icon"><i class="bi bi-coin"></i></span><span class="txt-link">Vendas</span></a></li>
+        </ul>
+    </nav>
+
+    <div class="container" id="product-list">
+        <div class="card">
+            <img src="./imagens/camisa xadres.jpg" alt="Camisa Xadrez">
+            <div><h1>Camisa Xadrez</h1><h2>Disponível</h2><span>30/50</span></div>
+        </div>
+        <div class="card">
+            <img src="./imagens/roupas-country-calca-jeans-masculino-azul-marinho-mcs7700-p-1722291814355.jpg" alt="Calça Jeans Country">
+            <div><h1>Calça Jeans Country</h1><h2>Disponível</h2><span>15/40</span></div>
+        </div>
+        <div class="card">
+            <img src="./imagens/botadecouro.jpg" alt="Bota de Couro">
+            <div><h1>Bota de Couro</h1><h2>Disponível</h2><span>10/25</span></div>
+        </div>
+        <div class="card">
+            <img src="./imagens/vestido_festa_debutante_curto_azul_1421_1_1fc9d726428ef1bb4e8c83417e962c42.webp" alt="Vestido Festa">
+            <div><h1>Vestido Festa</h1><h2>Disponível</h2><span>5/20</span></div>
+        </div>
+        <div class="card">
+            <img src="./imagens/conjunto social feminino.jpg" alt="Conjunto Social">
+            <div><h1>Conjunto Social</h1><h2>Disponível</h2><span>12/30</span></div>
+        </div>
+        <div class="card">
+            <img src="./imagens/roupaSocialMasculina.jpg" alt="Roupa Social Masculina">
+            <div><h1>Roupa Social Masculina</h1><h2>Disponível</h2><span>8/20</span></div>
+        </div>
+    </div>
+
+    <button class="botao-adicionar" onclick="abrirModal()">+</button>
+
+    <div class="modal" id="modal">
+        <div class="modal-conteudo">
+            <span class="fechar" id="fecharModal">&times;</span>
+            <h2>Cadastrar Novo Produto</h2>
+            <form id="formCadastro">
+                <input type="text" id="nome-produto" placeholder="Nome do produto" required />
+                <input type="number" id="quantidade-produto" placeholder="Quantidade atual" required />
+                <input type="number" id="estoque-minimo" placeholder="Quantidade máxima" required />
+
+                <select id="categoria-produto" required>
+                    <option value="">Selecione a categoria</option>
+                    <option value="Tecido">Tecido</option>
+                    <option value="Linha">Linha</option>
+                    <option value="Botões">Botões</option>
+                    <option value="Outros">Outros</option>
+                </select>
+
+                <label for="imagem-url" style="margin-top: 10px;">Imagem do produto:</label>
+                <input type="file" id="imagem-url" accept="image/*">
+                <img id="imagem-preview" style="display:none; max-width: 100px; margin-top: 10px;" />
+
+                <button type="submit">Cadastrar</button>
+            </form>
+        </div>
+    </div>
+    
+
+    <script src="produtos.js"></script>
+</body>
+</html>
