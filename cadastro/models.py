@@ -4,7 +4,7 @@ from django.utils import timezone
 from datetime import timedelta
 from django.core.validators import MinValueValidator
 from django.core.exceptions import ValidationError
-
+from django.utils.timezone import now
 
 
 class Usuario(models.Model):
@@ -14,7 +14,7 @@ class Usuario(models.Model):
     cpf_cnpj = models.CharField(max_length=20, unique=True)
     telefone = models.CharField(max_length=20, unique=True)
 
-    def __str__(self):
+    def _str_(self):
         return self.nome
 
 class PasswordResetToken(models.Model):
@@ -52,6 +52,65 @@ class categorias(models.Model):
         db_table = "categorias"
         managed = False
 
+    def _str_(self):
+        return self.nome
+
+class MateriaPrima(models.Model):
+    id = models.AutoField(primary_key=True)
+    nome_materia_prima = models.CharField(max_length=100, unique=True)
+    unidade_medida = models.CharField(max_length=20)
+    estoque_atual = models.IntegerField(validators=[MinValueValidator(0)])
+    custo_unitario = models.DecimalField(
+    max_digits=10,
+    decimal_places=2,
+    validators=[MinValueValidator(1)]
+    )
+    data_ultima_atualizacao = models.DateField()
+    fornecedor_preferencial = models.CharField(max_length=100)
+    categoria = models.ForeignKey(
+        categorias,
+        to_field='nome',      
+        db_column='categoria',
+        on_delete=models.PROTECT,
+    )
+
+    def _str_(self):
+        return self.nome_materia_prima
+
+class Produto(models.Model):
+    id = models.AutoField( primary_key=True )
+    nome_produto = models.CharField(max_length=255, unique=True)
+    descricao = models.TextField()
+    codigo_barras = models.CharField(max_length=50, unique=True, null=True, blank=True)
+    custo_producao = models.DecimalField(
+    max_digits=10,
+    decimal_places=2,
+    validators=[MinValueValidator(1)],
+    default=000
+    )
+    preco = models.DecimalField(
+    max_digits=10,
+    decimal_places=2,
+    validators=[MinValueValidator(1)]
+    )
+    estoque_atual = models.IntegerField()
+    estoque_maximo = models.IntegerField( default=100)
+    estoque_minimo = models.IntegerField( default=1 )
+    data_ultima_atualizacao = models.DateTimeField(auto_now=True)
+    img_produto = models.ImageField(upload_to='imagens_produtos/', default=True)
+    categoria = models.ForeignKey(
+        categorias,
+        to_field='nome',
+        db_column='categoria',
+        on_delete=models.PROTECT,
+        default='Sem Categoria',
+    )
+
+    class Meta:
+        db_table = "Produto"
+
+    def _str_(self):
+        return self.nome_produto
 class Item(models.Model):
     id = models.AutoField(primary_key=True) 
     nome = models.CharField(max_length=100, unique=True)
@@ -89,34 +148,28 @@ class Item(models.Model):
         db_table = "Estoque"
 
 
-class MateriaisUsados(models.Model):
-    material = models.ForeignKey(Item, on_delete=models.PROTECT)
-    quantidade = models.IntegerField()
+# class MateriaisUsados(models.Model):
+#     id = models.AutoField( primary_key=True)
+#     produto = models.ForeignKey(
+#         Produto,
+#         to_field='id',
+#         db_column='produto',
+#         on_delete=models.PROTECT,
+#     )
+#     materia_prima = models.ForeignKey(
+#         MateriaPrima,
+#         to_field='id',
+#         db_column='materia_prima',
+#         on_delete=models.PROTECT)
+#     quantidade_necessaria = models.IntegerField(validators=[MinValueValidator(1)])
 
-    class Meta:
-        db_table = "materiais_usados"
-        managed = False  
+#     class Meta:
+#         db_table = "materiais_usados"
+#         unique_together = ('produto', 'materia_prima') 
 
-class Produto(models.Model):
-    nome = models.CharField(max_length=255, unique=True)
-    descricao = models.TextField()
-    preco = models.FloatField()
-    quantidade = models.IntegerField()
-    categoria = models.ForeignKey(
-        categorias,
-        to_field='nome',
-        db_column='categoria',
-        on_delete=models.PROTECT,
-        default='Sem Categoria',
-    )
+#     def _str_(self):
+#         return f'{self.quantidade_necessaria} de {self.materia_prima} para {self.produto}' 
 
-
-    class Meta:
-        db_table = "Produto"
-        
-
-    def __str__(self):
-        return self.nome
 
 class Producao(models.Model):
     nome = models.CharField(max_length=255)
@@ -157,7 +210,7 @@ class Clientes(models.Model):
     class Meta:
         db_table = "Clientes"
 
-    def __str__(self):
+    def _str_(self):
         return self.nome
 
 class Vendas(models.Model):
@@ -180,6 +233,5 @@ class Vendas(models.Model):
     class Meta:
         db_table = "Vendas"
 
-    def __str__(self):
+    def _str_(self):
         return f"Venda {self.id} - Comprador: {self.comprador_nome} - Valor: {self.valor}"
-    

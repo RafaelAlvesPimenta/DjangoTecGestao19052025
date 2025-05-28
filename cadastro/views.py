@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.http import HttpResponse
 from django.contrib.auth.hashers import make_password, check_password
-from .models import Usuario, Item, categorias
+from .models import Usuario, Item, categorias, MateriaPrima, Produto
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required
 from django.utils.html import strip_tags
@@ -141,43 +141,74 @@ def Vendas(request):
 def Estoque(request):
     categorias_lista = categorias.objects.all()
     if request.method == "POST":
+        if "atualizar_estoque" in request.POST:
+            produtos = Produto.objects.all()
+            for produto in produtos:
+                campo_estoque = f'estoque_{produto.id}'
+                nova_quantidade = request.POST.get(campo_estoque)
+                if nova_quantidade is not None and nova_quantidade.isdigit():
+                    produto.estoque_atual = int(nova_quantidade)
+                    produto.save()
+            messages.success(request, "Estoque atualizado com sucesso.")
+            return redirect('estoque')
+        if "excluir_produto" in request.POST:
+            produtos = Produto.objects.all()
+            for produto in produtos:
+                campo_estoque = f'estoque_{produto.id}'
+                nova_quantidade = request.POST.get(campo_estoque)
+                if nova_quantidade is not None and nova_quantidade.isdigit():
+                    produto.estoque_atual = int(nova_quantidade)
+                    produto.save()
+            messages.success(request, "Estoque atualizado com sucesso.")
+            return redirect('estoque')
         
-            nome = request.POST.get('nome')
-            quantidade = request.POST.get('quantidade')
-            quantidade_maxima = request.POST.get('quantidade_maxima')
-            quantidade_minima = request.POST.get('quantidade_minima')
-            categoria_id = request.POST.get('categoria')
-            categoria_obj = categorias.objects.get(id=categoria_id)
-            imagem_produto = request.FILES.get('imagem-produto')
-            valor = request.POST.get('valor')
-            
-            if Item.objects.filter(nome = nome).exists():
-                messages.error(request, 'Já existe um item com esse nome')
+        nome_produto = request.POST.get('nome_produto')
+        quantidade = request.POST.get('quantidade')
+        quantidade_minima = request.POST.get('quantidade-min')
+        quantidade_maxima = request.POST.get('quantidade-max')
+        categoria_id = request.POST.get('categoria')
+        descricao = request.POST.get('descricao')
+        categoria_obj = categorias.objects.get(id=categoria_id)
+        imagem_produto = request.FILES.get('imagem-produto')
+        valor = request.POST.get('valor')
+        codigo_barras = request.POST.get('codigo_barras')
+        custo_producao = request.POST.get('custo_producao')
 
-            else:
-                Item.objects.create(
-                    nome = nome,
-                    quantidade = quantidade,
-                    quantidade_minima = quantidade_minima,
-                    quantidade_maxima = quantidade_maxima,
-                    categoria=categoria_obj,
-                    img_produto = imagem_produto,
-                    preco = valor,
-                )
-                return redirect('estoque')
+            
+        if Produto.objects.filter(nome_produto = nome_produto).exists():
+            messages.error(request, 'Já existe um item com esse nome')
+        else:
+            Produto.objects.create(
+                nome_produto = nome_produto,
+                descricao = descricao,
+                codigo_barras = codigo_barras,
+                custo_producao = custo_producao,
+                preco = valor,
+                estoque_atual = quantidade,
+                estoque_maximo = quantidade_maxima,
+                estoque_minimo = quantidade_minima,
+                categoria=categoria_obj,
+                img_produto = imagem_produto,
+                    
+            )
+            return redirect('estoque')
     categoria = request.GET.get('categoria', 'all')
     if categoria == 'all':
-        produtos = Item.objects.all()
+        produtos = Produto.objects.all()
     else:
-        produtos = Item.objects.filter(categoria=categoria)
+        produtos = Produto.objects.filter(categoria=categoria)
 
     for produto in produtos:
-        try:
-            porcentagem = (produto.quantidade / produto.quantidade_maxima) * 100 if produto.quantidade_maxima > 0 else 0
-        except ZeroDivisionError:
+        estoque_atual = produto.estoque_atual or 0
+        estoque_maximo = produto.estoque_maximo or 1  # evita None ou zero
+        
+        if estoque_maximo == 0:
             porcentagem = 0
+        else:
+            porcentagem = (estoque_atual / estoque_maximo) * 100 if estoque_atual > 0 else 0
+        
         produto.barra = min(porcentagem, 100)
-        produto.em_falta = produto.quantidade == 0
+        produto.em_falta = estoque_atual == 0
     return render(request, 'site/Estoque.html', {'produtos': produtos, 'categorias': categorias_lista })
 
 def newPassword(request):
