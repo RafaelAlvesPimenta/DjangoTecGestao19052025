@@ -80,7 +80,11 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',  # Arquivo do banco de dados
+        'NAME': BASE_DIR / 'db.sqlite3',
+        'OPTIONS': {
+            'timeout': 30,  # Aumenta o timeout
+            'check_same_thread': False,  # Permite múltiplas threads
+        }
     }
 }
 

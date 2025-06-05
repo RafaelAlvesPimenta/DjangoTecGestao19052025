@@ -51,12 +51,12 @@
     </nav>
 
     <!-- Conteúdo principal -->
-    <div class="container" style="margin-left: 80px;">
+<div class="container" style="margin-left: 80px;">
         
         <!-- Filtros -->
         <div class="filtros">
             <label for="categoria">Selecione a categoria:</label>
-            <select id="categoria" name="categoria" onchange="filtrarCategoria()">
+            <select id="categoria" onchange="filtrarCategoria()">
                 <option value="all">Todos</option>
                 <option value="Tecido">Tecido</option>
                 <option value="Linha">Linha</option>
@@ -72,35 +72,50 @@
         </div>
 
         <!-- Cards de Produtos -->
-    <form method="POST">
-    {% csrf_token %}
     <div class="cards-container">
-            {% for produto in produtos %}
-                {% with porcentagem=produto.estoque_atual|divisibleby:produto.estoque_atual %}
-        <div class="card">
-            <img src="{{ produto.img_produto.url }}" alt="{{ produto.nome }}">
-            <h1>{{ produto.nome_produto }}</h1>
-            <h2>Quantidade</h2>
-            <span>{{ produto.estoque_atual }} / {{ produto.estoque_maximo }}</span>
+    {% for produto in produtos %}
+    <div class="card">
+        <img src="{{ produto.img_produto.url }}" alt="{{ produto.nome_produto }}">
+        <h1>{{ produto.nome_produto }}</h1>
+        <h2>Quantidade</h2>
+        <span>{{ produto.estoque_atual }} / {{ produto.estoque_maximo }}</span>
 
+        <form method="POST" class="estoque-form">
+            {% csrf_token %}
             <label for="estoque_{{ produto.id }}">Quantidade atual:</label>
             <input type="number" name="estoque_{{ produto.id }}" value="{{ produto.estoque_atual }}" min="0">
-      
-            <input type="hidden" name="produto_id_{{ produto.id }}" value="{{ produto.id }}">
+            <input type="hidden" name="produto_id" value="{{ produto.id }}">
+            
             <div class="grafico">
                 <div class="grafico-barra"
-                width: {{ produto.barra }} %;
-                background-color: {% if produto.em_falta %}#e74c3c{% else %}#16A085{% endif %};
-                ></div>
-            <button type="submit" name="atualizar_estoque">Salvar alterações</button>
-    </form>
-        </div>
+                    style="width: {{ produto.barra }}%;
+                    background-color: {% if produto.em_falta %}#e74c3c{% else %}#16A085{% endif %};">
+                </div>
+            </div>
+            
+            <button type="submit" name="atualizar_estoque">Atualizar</button>
+        </form>
+        
+        <button class="button_edit_product"
+                data-id="{{ produto.id }}" 
+                data-nome="{{ produto.nome_produto }}"
+                data-quantidade="{{ produto.estoque_atual }}"
+                data-min="{{ produto.estoque_minimo }}"
+                data-max="{{ produto.estoque_maximo }}"
+                data-descricao="{{ produto.descricao }}"
+                data-custo="{{ produto.custo_producao }}"
+                data-valor="{{ produto.preco }}"
+                data-categoria="{{ produto.categoria.id }}"
+                data-imagem="{{ produto.img_produto.url }}"
+                onclick="abrirModalEditar(this)">
+            Editar
+        </button>
     </div>
-                {% endwith %}
-            {% empty %}
-                <p>Nenhum produto encontrado.</p>
-            {% endfor %}
-        </div>
+    {% empty %}
+    <p>Nenhum produto encontrado.</p>
+    {% endfor %}
+</div>
+
 
         <!-- Botão flutuante "+" -->
         <button id="abrirModal" class="botao-adicionar">+</button>
@@ -116,16 +131,18 @@
                     <input type="number" name="quantidade" id="quantidade-produto" placeholder="Quantidade atual" required />
                     <input type="number" name="quantidade-min" id="quantidade-min-produto" placeholder="Quantidade Mínima" required />
                     <input type="number" name="quantidade-max" id="quantidade-max-produto" placeholder="Quantidade Máxima" required />
-                    <textarea name="descricao" id="descricao" placeholder="descrição"></textarea>
+                    <textarea name="descricao" id="descricao" placeholder="Descrição"></textarea>
                     <input type="number" name="custo_producao" step="0.01" min="0.01" id="custo_producao" placeholder="custo producao" required />
                     <input type="number" step="0.01" min="0.01" name="valor" id="valor" placeholder="Valor" required />
 
+                    <div class="category_in_form_new_produto">
                     <select name="categoria" id="categoria-produto" required>
                         {% for c in categorias %}
                         <option value="{{ c.id }}">{{ c.nome }}</option>
                         {% endfor %}  
                     </select>
-                    
+                    <button type="button" id="button_new_category">+</button>
+                    </div>
                     <label for="imagem-url" style="margin-top: 10px;">Imagem do produto:</label>
                     <input type="file" name="imagem-produto" id="imagem-url" accept="image/*">
                     <img id="imagem-preview" style="display:none; max-width: 100px; margin-top: 10px;" />
@@ -136,6 +153,39 @@
         </div>
     </div>
     <!-- End Modal de Cadastro -->
+
+<!-- Modal de Edição -->
+<div class="modal" id="modalEditar">
+    <div class="modal-conteudo">
+        <span class="fechar" onclick="fecharModalEditar()">&times;</span>
+        <h2>Editar Produto</h2>
+        <form id="formEditar" method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            <input type="hidden" name="produto_id" id="editar-produto-id">
+            <input type="text" name="nome_produto" id="editar-nome-produto" placeholder="Nome do produto" required />
+            <input type="number" name="quantidade" id="editar-quantidade" placeholder="Quantidade atual" required />
+            <input type="number" name="quantidade-min" id="editar-quantidade-min" placeholder="Quantidade Mínima" required />
+            <input type="number" name="quantidade-max" id="editar-quantidade-max" placeholder="Quantidade Máxima" required />
+            <textarea name="descricao" id="editar-descricao" placeholder="Descrição"></textarea>
+            <input type="number" name="custo_producao" step="0.01" min="0.01" id="editar-custo-producao" placeholder="Custo produção" required />
+            <input type="number" step="0.01" min="0.01" name="valor" id="editar-valor" placeholder="Valor" required />
+
+            <select name="categoria" id="editar-categoria" required>
+                {% for c in categorias %}
+                <option value="{{ c.id }}">{{ c.nome }}</option>
+                {% endfor %}  
+            </select>
+
+            <label for="editar-imagem-url" style="margin-top: 10px;">Imagem do produto:</label>
+            <input type="file" name="imagem-produto" id="editar-imagem-url" accept="image/*">
+            <img id="editar-imagem-preview" style="max-width: 100px; margin-top: 10px;" />
+
+            <button type="submit" name="form_editar_produto">Salvar Alterações</button>
+        </form>
+    </div>
+</div>
+
+    <!-- start security_close_modal -->
     <div class="security_close_modal">
         <div class="security_close_modal" id="select_close_modal" >
             <h3>Você quer continuar?</h3>
@@ -144,6 +194,24 @@
             <button id="nao">Não</button>
         </div>
     </div>
+    <!-- end security_close_modal -->
+
+    <div id="backend_form_new_category">
+        {% if messages %}
+          {% for message in messages %}
+              <li class="{{ message.tags }}">{{ message }}</li>
+          {% endfor %}
+      {% endif %}
+        <div class="form_new_category" id="form_new_category">
+            <form method="POST" class="">
+                {% csrf_token %}
+                <span class="fechar" id="fecharModal_new_category">&times;</span>
+                <input type="text"  id="new_category" name="new_category" placeholder="ex:Camiseta">
+                <button type="submit" id="button_register_category" name="button_register_category" class="button_register_category">Registrar Categoria</button>
+            </form>
+        </div>
+    </div>
+
 
 
 

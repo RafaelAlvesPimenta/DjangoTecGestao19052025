@@ -137,7 +137,7 @@ ul li.item-menu:hover {
 
 .card img {
    width: 100%;
-   height: auto;
+   height: 20%;
    border-radius: 10px;
    margin-bottom: 15px;
    max-height: 150px;
@@ -327,6 +327,7 @@ ul li.item-menu:hover {
 }
 
 .modal-conteudo input,
+.modal-conteudo textarea,
 .modal-conteudo select {
    padding: 10px;
    font-size: 16px;
@@ -350,6 +351,33 @@ ul li.item-menu:hover {
    background-color: #138d75;
 }
 
+.category_in_form_new_produto{
+   display: flex;         
+    align-items: center;   
+    gap: 10px;         
+}
+
+#categoria-produto{
+   flex: 1;  
+}
+
+#button_new_category{
+   width: 40px;           
+   height: 40px;         
+   font-size: 1.2rem;  
+   background-color: #16A085;
+   color: white;
+   border: none;
+   border-radius: 6px;
+   font-size: 16px;
+   cursor: pointer;
+   transition: background-color 0.3s ease; 
+}
+
+#button_new_category:hover {
+   background-color: #138d75;
+}
+
 .fechar {
    position: absolute;
    top: 10px;
@@ -363,6 +391,10 @@ ul li.item-menu:hover {
 
 .fechar:hover {
    color: #333;
+}
+
+.button_edit_product{
+   margin-top:5% ;
 }
 
 .botao-adicionar {
@@ -390,7 +422,7 @@ ul li.item-menu:hover {
 
 /* start security close modal */
 .security_close_modal {
-   display: none; /* oculto inicialmente */
+   display: none;
    position: fixed;
    top: 0;
    left: 0;
@@ -445,3 +477,50 @@ ul li.item-menu:hover {
  #nao:hover { background: #727272; }
  
 /* end security close modal */
+
+/* start form new category */
+#backend_form_new_category{
+   display: none;
+   position: fixed;
+   top: 0;
+   left: 0;
+   width: 100vw;
+   height: 100vh;
+   background-color: rgba(0,0,0,0.6);
+   z-index: 1105;
+}
+
+.form_new_category{
+   background: #fff;
+   border-radius: 10px;
+   padding: 20px;
+   width: 10vw;
+   height: 5vw;
+   box-shadow: 0 6px 15px rgba(0,0,0,0.2);
+   display: flex;
+   flex-direction: column;
+   gap: 10px;
+   font-family: sans-serif;
+   font-size: 14px;
+   color: #333;
+   position: absolute;
+   top: 50%;
+   left: 50%;
+   transform: translate(-50%, -50%);
+
+}
+#form_new_category input{
+   margin-top: 2vw;
+}
+/* end form new category */
+
+.error {
+   color: white;
+   background-color: #ff4d4d;
+   padding: 10px;
+   border-radius: 5px;
+   margin-bottom: 10px;
+   font-weight: bold;
+   text-align: center;
+   list-style: none;
+}

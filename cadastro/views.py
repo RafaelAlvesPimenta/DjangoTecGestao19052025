@@ -138,7 +138,7 @@ def Produtos(request):
 def Vendas(request):
     return render(request, 'site/Vendas.html')
 
-def Estoque(request):
+def Estoque(request): 
     categorias_lista = categorias.objects.all()
     if request.method == "POST":
         if "atualizar_estoque" in request.POST:
@@ -151,56 +151,99 @@ def Estoque(request):
                     produto.save()
             messages.success(request, "Estoque atualizado com sucesso.")
             return redirect('estoque')
-        if "excluir_produto" in request.POST:
-            produtos = Produto.objects.all()
-            for produto in produtos:
-                campo_estoque = f'estoque_{produto.id}'
-                nova_quantidade = request.POST.get(campo_estoque)
-                if nova_quantidade is not None and nova_quantidade.isdigit():
-                    produto.estoque_atual = int(nova_quantidade)
-                    produto.save()
-            messages.success(request, "Estoque atualizado com sucesso.")
-            return redirect('estoque')
         
-        nome_produto = request.POST.get('nome_produto')
-        quantidade = request.POST.get('quantidade')
-        quantidade_minima = request.POST.get('quantidade-min')
-        quantidade_maxima = request.POST.get('quantidade-max')
-        categoria_id = request.POST.get('categoria')
-        descricao = request.POST.get('descricao')
-        categoria_obj = categorias.objects.get(id=categoria_id)
-        imagem_produto = request.FILES.get('imagem-produto')
-        valor = request.POST.get('valor')
-        codigo_barras = request.POST.get('codigo_barras')
-        custo_producao = request.POST.get('custo_producao')
-
-            
-        if Produto.objects.filter(nome_produto = nome_produto).exists():
-            messages.error(request, 'Já existe um item com esse nome')
-        else:
-            Produto.objects.create(
-                nome_produto = nome_produto,
-                descricao = descricao,
-                codigo_barras = codigo_barras,
-                custo_producao = custo_producao,
-                preco = valor,
-                estoque_atual = quantidade,
-                estoque_maximo = quantidade_maxima,
-                estoque_minimo = quantidade_minima,
-                categoria=categoria_obj,
-                img_produto = imagem_produto,
-                    
-            )
+        if "button_register_category" in request.POST:
+            new_category = request.POST.get('new_category')
+            if categorias.objects.filter(nome = new_category).exists():
+                messages.error(request, "Essa categoria já existe")
+            else:
+                categorias.objects.create(nome = new_category)
+                messages.success(request, "Categoria criada com sucesso!")
             return redirect('estoque')
-    categoria = request.GET.get('categoria', 'all')
-    if categoria == 'all':
-        produtos = Produto.objects.all()
+
+        if 'form_newItem' in request.POST:
+            nome_produto = request.POST.get('nome_produto')
+            quantidade = request.POST.get('quantidade')
+            quantidade_minima = request.POST.get('quantidade-min')
+            quantidade_maxima = request.POST.get('quantidade-max')
+            categoria_id = request.POST.get('categoria')
+            print("categoria_id recebido:", categoria_id)
+            try:
+                categoria_obj = categorias.objects.get(id=categoria_id)
+            except categorias.DoesNotExist:
+                messages.error(request, "Categoria selecionada é inválida.")
+                print("Categoria selecionada é inválida.")
+                return redirect('estoque')
+
+            categoria_obj = categorias.objects.get(id=categoria_id)
+            descricao = request.POST.get('descricao')
+            imagem_produto = request.FILES.get('imagem-produto')
+            valor = request.POST.get('valor')
+            codigo_barras = request.POST.get('codigo_barras')
+            custo_producao = request.POST.get('custo_producao')
+
+                
+            if Produto.objects.filter(nome_produto = nome_produto).exists():
+                messages.error(request, 'Já existe um item com esse nome')
+            else:
+                Produto.objects.create(
+                    nome_produto = nome_produto,
+                    descricao = descricao,
+                    codigo_barras = codigo_barras,
+                    custo_producao = custo_producao,
+                    preco = valor,
+                    estoque_atual = quantidade,
+                    estoque_maximo = quantidade_maxima,
+                    estoque_minimo = quantidade_minima,
+                    categoria=categoria_obj,
+                    img_produto = imagem_produto,
+                        
+                )
+                return redirect('estoque')
+            
+        if "form_editar_produto" in request.POST:
+            produto_id = request.POST.get('produto_id')
+            try:
+                produto = Produto.objects.get(id=produto_id)
+                produto.nome_produto = request.POST.get('nome_produto')
+                produto.estoque_atual = request.POST.get('quantidade')
+                produto.estoque_minimo = request.POST.get('quantidade-min')
+                produto.estoque_maximo = request.POST.get('quantidade-max')
+                produto.descricao = request.POST.get('descricao')
+                produto.custo_producao = request.POST.get('custo_producao')
+                produto.preco = request.POST.get('valor')
+                
+                categoria_id = request.POST.get('categoria')
+                if categoria_id:
+                    produto.categoria = categorias.objects.get(id=categoria_id)
+                
+                if 'imagem-produto' in request.FILES:
+                    produto.img_produto = request.FILES['imagem-produto']
+                
+                produto.save()
+                messages.success(request, "Produto atualizado com sucesso!")
+                print("Produto atualizado com sucesso!")
+                return redirect('estoque')
+                
+            except Exception as e:
+                messages.error(request, f"Erro ao atualizar produto: {str(e)}")
+                return redirect('estoque')
+            
+    categoria_id = request.GET.get('categoria', 'all')
+    print("categoria_id enviado:", categoria_id)
+    if categoria_id == 'all':
+        produtos = Produto.objects.all()        
     else:
-        produtos = Produto.objects.filter(categoria=categoria)
+        try:
+            categoria_obj = categorias.objects.get(id=categoria_id)
+            produtos = Produto.objects.filter(categoria=categoria_obj)
+        except categorias.DoesNotExist:
+            produtos = Produto.objects.none()
+            messages.error(request, "Categoria não encontrada.")
 
     for produto in produtos:
         estoque_atual = produto.estoque_atual or 0
-        estoque_maximo = produto.estoque_maximo or 1  # evita None ou zero
+        estoque_maximo = produto.estoque_maximo or 1  
         
         if estoque_maximo == 0:
             porcentagem = 0
@@ -208,8 +251,23 @@ def Estoque(request):
             porcentagem = (estoque_atual / estoque_maximo) * 100 if estoque_atual > 0 else 0
         
         produto.barra = min(porcentagem, 100)
-        produto.em_falta = estoque_atual == 0
+        produto.em_falta = estoque_atual == 10
     return render(request, 'site/Estoque.html', {'produtos': produtos, 'categorias': categorias_lista })
 
 def newPassword(request):
     return render(request, 'resetsenha/resetPassword.html')
+
+def editar_produto(request):
+    if request.method == 'POST' and 'form_editar_produto' in request.POST:
+        produto_id = request.POST.get('produto_id')
+        nome = request.POST.get('nome_produto')
+        quantidade = request.POST.get('quantidade')
+        # e assim por diante...
+
+        produto = Produto.objects.get(id=produto_id)
+        produto.nome_produto = nome
+        produto.estoque_atual = quantidade
+        # etc...
+
+        produto.save()
+        return redirect('estoque')  # ou render, com contexto
