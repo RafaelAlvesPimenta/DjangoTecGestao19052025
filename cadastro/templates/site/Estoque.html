@@ -4,13 +4,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Estoque de Matérias-Primas</title>
-    <link rel="stylesheet" href="{% static 'CSS/Estoque.css' %}">
+    <title>Estoque</title>
+    <link rel="stylesheet" href="{% static 'CSS/estoque.css' %}">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
-    <link rel="icon" href="{% static 'imagens/icon logo TecGestão.png' %}" type="image/x-icon">
 </head>
 <body>
-
     <!-- Menu Lateral -->
     <nav class="menu-lateral">
         <div class="bnt-expandir">
@@ -50,92 +49,86 @@
         </ul>
     </nav>
 
-    <!-- Conteúdo principal -->
-<div class="container" style="margin-left: 80px;">
-        
-        <!-- Filtros -->
-        <div class="filtros">
-            <label for="categoria">Selecione a categoria:</label>
-            <select id="categoria" onchange="filtrarCategoria()">
-                <option value="all">Todos</option>
-                <option value="Tecido">Tecido</option>
-                <option value="Linha">Linha</option>
-                <option value="Botões">Botões</option>
-                <option value="Outros">Outros</option>
-            </select>
-        </div>
+    <div id="table_materia_prima" class="table_estoque_materia_prima">
+        <table class="table table-bordered" class="table">
+            <thead>
+                <tr>
+                <th scope="col">id</th>
+                <th scope="col">Nome</th>
+                <th scope="col">Quantidade Atual</th>
+                <th scope="col">Custo Unitario</th>
+                <th scope="col">Fornecedor Preferencial</th>
+                <th scope="col">Imagem</th>
+                <th scope="col">Editar</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for material in materiais%}
+                <tr >
+                <th style="background-color: {% if material.em_falta %}#e74c3c{% else %}#16A085{% endif %}; color: white;" scope="row">
+                    {{ material.id }}</th>
+                <td style="background-color: {% if material.em_falta %}#e74c3c{% else %}#16A085{% endif %}; color: white;">
+                    {{ material.nome_materia_prima }} </td>
+                <td style="background-color: {% if material.em_falta %}#e74c3c{% else %}#16A085{% endif %}; color: white;">
+                {{ material.estoque_atual}}</td>
+                <td style="background-color: {% if material.em_falta %}#e74c3c{% else %}#16A085{% endif %}; color: white;">
+                    {{ material.custo_unitario}}</td>
+                <td style="background-color: {% if material.em_falta %}#e74c3c{% else %}#16A085{% endif %}; color: white;">
+                    {{ material.fornecedor_preferencial}}</td>
+                <td style="background-color: {% if material.em_falta %}#e74c3c{% else %}#16A085{% endif %}; color: white;">
+                    {% if material.tem_imagem %}
+                        <img class="img-zoom" src="{{ material.img_material.url }}" alt="Imagem" width="100" height="30">
+                    {% else %}
+                        <p>Sem imagem disponível</p>
+                    {% endif %}
+                </td>
 
-        <!-- Aviso de Falta -->
-        <div class="aviso-falta" id="aviso-falta">
-            <h2>Produtos em falta ou com baixa quantidade:</h2>
-            <ul id="aviso-falta-lista"></ul>
-        </div>
-
-        <!-- Cards de Produtos -->
-    <div class="cards-container">
-    {% for produto in produtos %}
-    <div class="card">
-        <img src="{{ produto.img_produto.url }}" alt="{{ produto.nome_produto }}">
-        <h1>{{ produto.nome_produto }}</h1>
-        <h2>Quantidade</h2>
-        <span>{{ produto.estoque_atual }} / {{ produto.estoque_maximo }}</span>
-
-        <form method="POST" class="estoque-form">
-            {% csrf_token %}
-            <label for="estoque_{{ produto.id }}">Quantidade atual:</label>
-            <input type="number" name="estoque_{{ produto.id }}" value="{{ produto.estoque_atual }}" min="0">
-            <input type="hidden" name="produto_id" value="{{ produto.id }}">
-            
-            <div class="grafico">
-                <div class="grafico-barra"
-                    style="width: {{ produto.barra }}%;
-                    background-color: {% if produto.em_falta %}#e74c3c{% else %}#16A085{% endif %};">
-                </div>
-            </div>
-            
-            <button type="submit" name="atualizar_estoque">Atualizar</button>
-        </form>
-        
-        <button class="button_edit_product"
-                data-id="{{ produto.id }}" 
-                data-nome="{{ produto.nome_produto }}"
-                data-quantidade="{{ produto.estoque_atual }}"
-                data-min="{{ produto.estoque_minimo }}"
-                data-max="{{ produto.estoque_maximo }}"
-                data-descricao="{{ produto.descricao }}"
-                data-custo="{{ produto.custo_producao }}"
-                data-valor="{{ produto.preco }}"
-                data-categoria="{{ produto.categoria.id }}"
-                data-imagem="{{ produto.img_produto.url }}"
-                onclick="abrirModalEditar(this)">
-            Editar
-        </button>
+                <td class="td_editar">
+                    <button name="edit_material" class="edit_icon_material"
+                    data-id="{{ material.id }}" 
+                    data-nome="{{ material.nome_materia_prima }}"
+                    data-unidade_medida="{{ material.unidade_medida }}"
+                    data-unidade_compra="{{ material.unidade_compra }}"
+                    data-custo_unitario="{{ material.custo_unitario }}"
+                    data-quantidade="{{ material.estoque_atual }}"
+                    data-min="{{ material.estoque_minimo }}"
+                    data-max="{{ material.estoque_maximo }}"
+                    data-descricao="{{ material.descricao }}"
+                    data-categoria="{{ material.categoria.id }}"
+                    onclick="abrirModalEditar(this)">
+                    <i id="icon_edit_material" class="bi bi-pencil-square"></i>
+                    </button>
+                </td>
+                </tr>
+                {% empty %}
+                <tr>
+                     <td colspan="4">Nenhum Item encontrado.</td>
+                </tr>
+                {% endfor%}
+            </tbody>
+        </table>
     </div>
-    {% empty %}
-    <p>Nenhum produto encontrado.</p>
-    {% endfor %}
-</div>
-
 
         <!-- Botão flutuante "+" -->
         <button id="abrirModal" class="botao-adicionar">+</button>
 
-        <!-- Modal de Cadastro -->
+    <!-- Modal de Cadastro -->
         <div class="modal" id="modalCadastro">
             <div class="modal-conteudo">
                 <span class="fechar" id="fecharModal">&times;</span>
                 <h2>Cadastrar Novo Produto</h2>
                 <form name="form_newItem" id="formCadastro" method="POST" enctype="multipart/form-data">
                     {% csrf_token %}
-                    <input type="text" name="nome_produto" id="nome-produto" placeholder="Nome do produto" required />
-                    <input type="number" name="quantidade" id="quantidade-produto" placeholder="Quantidade atual" required />
+                    <input type="text" name="nome_materia_prima" id="nome-material" placeholder="Nome do Item" required />
+                    <input type="number" name="estoque_atual" id="quantidade-produto" placeholder="Quantidade atual" required />
                     <input type="number" name="quantidade-min" id="quantidade-min-produto" placeholder="Quantidade Mínima" required />
                     <input type="number" name="quantidade-max" id="quantidade-max-produto" placeholder="Quantidade Máxima" required />
+                    <input type="text" name="FornecedorPreferencial" id="FornecedorPreferencial" placeholder="Fornecedor Preferencial"  />
                     <textarea name="descricao" id="descricao" placeholder="Descrição"></textarea>
-                    <input type="number" name="custo_producao" step="0.01" min="0.01" id="custo_producao" placeholder="custo producao" required />
-                    <input type="number" step="0.01" min="0.01" name="valor" id="valor" placeholder="Valor" required />
+                    <input type="number" step="0.01" name="custo_unitario" placeholder="Valor Unitario" required>
 
-                    <div class="category_in_form_new_produto">
+                    <div class="category_in_form_new_material">
+                    <label for="categoria-produto" style="margin-top: 10px;">Categoria do Item:</label>
                     <select name="categoria" id="categoria-produto" required>
                         {% for c in categorias %}
                         <option value="{{ c.id }}">{{ c.nome }}</option>
@@ -143,8 +136,28 @@
                     </select>
                     <button type="button" id="button_new_category">+</button>
                     </div>
-                    <label for="imagem-url" style="margin-top: 10px;">Imagem do produto:</label>
-                    <input type="file" name="imagem-produto" id="imagem-url" accept="image/*">
+
+                    <div class="category_in_form_new_material">
+                    <label for="unidade_compra" style="margin-top: 10px;">Unidade de compra:</label>
+                    <select name="unidade_compra" id="unidade_compra">
+                        {% for unidadeC in unidadescompra %}
+                        <option value="{{ unidadeC.id }}">{{ unidadeC.nome }}</option>
+                        {% endfor %}  
+                    </select>
+                    </div>
+                    <div class="category_in_form_new_material">
+                    <label for="unidade_medida" style="margin-top: 10px;">Unidade de medida:</label>
+                    <select name="unidade_medida" id="unidade_medida">
+                        {% for unidade in unidadesmedidas %}
+                        <option value="{{ unidade.id }}">{{ unidade.nome }}</option>
+                        {% endfor %}  
+                    </select>
+                    </div>
+                    <input type="number" step="0.1" name="metragem_por_unidade" placeholder="Metragem por unidade" required>
+                    
+
+                    <label for="imagem-url" style="margin-top: 10px;">Imagem do material:</label>
+                    <input type="file" name="imagem_material" id="imagem-url" accept="image/*">
                     <img id="imagem-preview" style="display:none; max-width: 100px; margin-top: 10px;" />
 
                     <button type="submit" name="form_newItem">Cadastrar</button>
@@ -154,36 +167,41 @@
     </div>
     <!-- End Modal de Cadastro -->
 
-<!-- Modal de Edição -->
-<div class="modal" id="modalEditar">
-    <div class="modal-conteudo">
-        <span class="fechar" onclick="fecharModalEditar()">&times;</span>
-        <h2>Editar Produto</h2>
-        <form id="formEditar" method="POST" enctype="multipart/form-data">
-            {% csrf_token %}
-            <input type="hidden" name="produto_id" id="editar-produto-id">
-            <input type="text" name="nome_produto" id="editar-nome-produto" placeholder="Nome do produto" required />
-            <input type="number" name="quantidade" id="editar-quantidade" placeholder="Quantidade atual" required />
-            <input type="number" name="quantidade-min" id="editar-quantidade-min" placeholder="Quantidade Mínima" required />
-            <input type="number" name="quantidade-max" id="editar-quantidade-max" placeholder="Quantidade Máxima" required />
-            <textarea name="descricao" id="editar-descricao" placeholder="Descrição"></textarea>
-            <input type="number" name="custo_producao" step="0.01" min="0.01" id="editar-custo-producao" placeholder="Custo produção" required />
-            <input type="number" step="0.01" min="0.01" name="valor" id="editar-valor" placeholder="Valor" required />
-
-            <select name="categoria" id="editar-categoria" required>
-                {% for c in categorias %}
-                <option value="{{ c.id }}">{{ c.nome }}</option>
-                {% endfor %}  
-            </select>
-
-            <label for="editar-imagem-url" style="margin-top: 10px;">Imagem do produto:</label>
-            <input type="file" name="imagem-produto" id="editar-imagem-url" accept="image/*">
-            <img id="editar-imagem-preview" style="max-width: 100px; margin-top: 10px;" />
-
-            <button type="submit" name="form_editar_produto">Salvar Alterações</button>
-        </form>
+    <!--Start modal new category-->
+    <div id="backend_form_new_category">
+        {% if messages %}
+          {% for message in messages %}
+              <li class="{{ message.tags }}">{{ message }}</li>
+          {% endfor %}
+      {% endif %}
+        <div class="form_new_category" id="form_new_category">
+            <form method="POST" class="">
+                {% csrf_token %}
+                <span class="fechar" id="fecharModal_new_category">&times;</span>
+                <input type="text"  id="new_category" name="new_category" placeholder="ex:Linha">
+                <button type="submit" id="button_register_category" name="button_register_category" class="button_register_category">Registrar Categoria</button>
+            </form>
+        </div>
     </div>
-</div>
+    <!--End modal new category-->
+
+     <!--Start modal unidade de medida-->
+    <div id="backend_form_new_category">
+        {% if messages %}
+          {% for message in messages %}
+              <li class="{{ message.tags }}">{{ message }}</li>
+          {% endfor %}
+      {% endif %}
+        <div class="form_new_category" id="form_unidade_medida">
+            <form method="POST" class="">
+                {% csrf_token %}
+                <span class="fechar" id="fecharModal_unidade_medida">&times;</span>
+                <input type="text"  id="new_category" name="new_category" placeholder="ex:Linha">
+                <button type="submit" id="button_unidade_medida" name="button_unidade_medida" class="button_register_category">Registrar Categoria</button>
+            </form>
+        </div>
+    </div>
+    <!--End modal unidade de medida-->
 
     <!-- start security_close_modal -->
     <div class="security_close_modal">
@@ -196,27 +214,6 @@
     </div>
     <!-- end security_close_modal -->
 
-    <div id="backend_form_new_category">
-        {% if messages %}
-          {% for message in messages %}
-              <li class="{{ message.tags }}">{{ message }}</li>
-          {% endfor %}
-      {% endif %}
-        <div class="form_new_category" id="form_new_category">
-            <form method="POST" class="">
-                {% csrf_token %}
-                <span class="fechar" id="fecharModal_new_category">&times;</span>
-                <input type="text"  id="new_category" name="new_category" placeholder="ex:Camiseta">
-                <button type="submit" id="button_register_category" name="button_register_category" class="button_register_category">Registrar Categoria</button>
-            </form>
-        </div>
-    </div>
-
-
-
-
-    <!-- Script JS externo -->
-    <script src="{% static 'JSs/Estoque.js' %}"></script>
-
+    <script src="{% static 'JSs/estoque.js' %}"></script>
 </body>
 </html>

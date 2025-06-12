@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.http import HttpResponse
 from django.contrib.auth.hashers import make_password, check_password
-from .models import Usuario, Item, categorias, MateriaPrima, Produto
+from .models import Usuario, Categorias_Produtos, Unidade_medida, Unidade_compra, Categorias_Materia_prima, MateriaPrima, Produto
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required
 from django.utils.html import strip_tags
@@ -132,15 +132,13 @@ def logout_usuario(request):
 
 def Planilhas(request):
     return render(request, 'site/planilhas.html')
-def Produtos(request):
-     
-    return render(request, 'site/Produtos.html')
-def Vendas(request):
-    return render(request, 'site/Vendas.html')
 
-def Estoque(request): 
-    categorias_lista = categorias.objects.all()
+
+def Estoque(request):
+    categorias_lista = Categorias_Materia_prima.objects.all()
+
     if request.method == "POST":
+
         if "atualizar_estoque" in request.POST:
             produtos = Produto.objects.all()
             for produto in produtos:
@@ -154,12 +152,146 @@ def Estoque(request):
         
         if "button_register_category" in request.POST:
             new_category = request.POST.get('new_category')
-            if categorias.objects.filter(nome = new_category).exists():
+            if Categorias_Materia_prima.objects.filter(nome = new_category).exists():
                 messages.error(request, "Essa categoria já existe")
             else:
-                categorias.objects.create(nome = new_category)
-                messages.success(request, "Categoria criada com sucesso!")
+                Categorias_Materia_prima.objects.create(nome = new_category)
+                
+
+
+        if 'form_newItem' in request.POST:
+            nome_materia_prima = request.POST.get('nome_materia_prima')
+            estoque_atual = request.POST.get('estoque_atual')
+            quantidade_minima = request.POST.get('quantidade-min')
+            quantidade_maxima = request.POST.get('quantidade-max')
+            unidade_medida_id  = request.POST.get('unidade_medida')
+            unidade_compra_id  = request.POST.get('unidade_compra')
+            custo_unitario = request.POST.get('custo_unitario')
+            categoria_id = request.POST.get('categoria')
+            fornecedor_preferencial = request.POST.get('FornecedorPreferencial')
+            imagem_material = request.FILES.get('imagem_material')
+
+            print("categoria_id recebido:", categoria_id)
+            try:
+                categoria_obj = Categorias_Materia_prima.objects.get(id=categoria_id)
+            except Categorias_Materia_prima.DoesNotExist:
+                messages.error(request, "Categoria selecionada é inválida.")
+                print("Categoria selecionada é inválida.")
+                return redirect('estoque')
+            try:
+                unidade_medida_obj = Unidade_medida.objects.get(id=unidade_medida_id)
+            except Unidade_medida.DoesNotExist:
+                messages.error(request, "Unidade de medida inválida.")
+                return redirect('estoque')
+            try:
+                custo_unitario_obj = Unidade_compra.objects.get(id=unidade_compra_id)
+            except Unidade_compra.DoesNotExist:
+                messages.error(request, "Unidade de medida inválida.")
+                return redirect('estoque')
+
+                
+            if MateriaPrima.objects.filter(nome_materia_prima = nome_materia_prima).exists():
+                messages.error(request, 'Já existe um item com esse nome')
+            else:
+                MateriaPrima.objects.create(
+                    nome_materia_prima = nome_materia_prima,
+                    unidade_medida = unidade_medida_obj,
+                    unidade_compra = custo_unitario_obj,
+                    custo_unitario = custo_unitario,
+                    estoque_atual = estoque_atual,
+                    estoque_maximo = quantidade_maxima,
+                    estoque_minimo = quantidade_minima,
+                    categoria=categoria_obj,
+                    fornecedor_preferencial = fornecedor_preferencial,
+                    img_material = imagem_material,
+                    
+                )
+                return redirect('estoque')
+            
+        if "edit_material" in request.POST:
+            material_id = request.POST.get('material_id')
+            try:
+                material = Produto.objects.get(id=material_id)
+                material.nome_materia_prima = request.POST.get('nome_produto')
+                unidade_medida_obj = Unidade_medida.objects.get(id=unidade_medida_id)
+                material.unidade_medida = unidade_medida_obj
+                material.estoque_atual = request.POST.get('quantidade')
+                try:
+                    material.estoque_minimo = int(request.POST.get('quantidade-min', 0))
+                    material.estoque_maximo = int(request.POST.get('quantidade-max', 0))
+                    material.custo_unitario = float(request.POST.get('custo_unitario', 0))
+                except ValueError:
+                    messages.error(request, "Valores numéricos inválidos")
+                    return redirect('estoque')
+                material.descricao = request.POST.get('descricao')
+                
+                categoria_id = request.POST.get('Categorias_Materia_prima')
+                if categoria_id:
+                    material.categoria = Categorias_Materia_prima.objects.get(id=categoria_id)
+                
+                if 'imagem-produto' in request.FILES:
+                    material.img_produto = request.FILES['imagem-produto']
+                
+                material.save()
+                messages.success(request, "Produto atualizado com sucesso!")
+                print("Produto atualizado com sucesso!")
+                return redirect('estoque')
+                
+            except Exception as e:
+                messages.error(request, f"Erro ao atualizar produto: {str(e)}")
             return redirect('estoque')
+
+    categoria_id = request.GET.get('categoria', 'all')
+
+    materiais = MateriaPrima.objects.all()
+
+    for material in materiais:
+        estoque_atual = material.estoque_atual or 0
+        estoque_maximo = material.estoque_maximo or 1  
+        estoque_minimo = material.estoque_minimo or 1  
+        material.tem_imagem = material.img_material and hasattr(material.img_material, 'url')
+        
+        if estoque_maximo == 0:
+            porcentagem = 0
+        else:
+            porcentagem = (estoque_atual / estoque_maximo) * 100 if estoque_atual > 0 else 0
+        
+        material.barra = min(porcentagem, 100)
+        material.em_falta = estoque_atual <= estoque_minimo    
+        
+    unidades_medidas = Unidade_medida.objects.all()
+    unidades_compra = Unidade_compra.objects.all()
+    return render(request, 'site/estoque.html', {'categorias': categorias_lista, 'unidadesmedidas': unidades_medidas, 'unidadescompra': unidades_compra,'materiais': materiais })
+
+
+
+
+
+
+
+def Produtos(request): 
+    categorias_lista = Categorias_Produtos.objects.all()
+    if request.method == "POST":
+
+        if "atualizar_estoque" in request.POST:
+            produtos = Produto.objects.all()
+            for produto in produtos:
+                campo_estoque = f'estoque_{produto.id}'
+                nova_quantidade = request.POST.get(campo_estoque)
+                if nova_quantidade is not None and nova_quantidade.isdigit():
+                    produto.estoque_atual = int(nova_quantidade)
+                    produto.save()
+            messages.success(request, "Estoque atualizado com sucesso.")
+            return redirect('produtos')
+        
+        if "button_register_category" in request.POST:
+            new_category = request.POST.get('new_category')
+            if Categorias_Produtos.objects.filter(nome = new_category).exists():
+                messages.error(request, "Essa categoria já existe")
+            else:
+                Categorias_Produtos.objects.create(nome = new_category)
+                messages.success(request, "Categoria criada com sucesso!")
+            
 
         if 'form_newItem' in request.POST:
             nome_produto = request.POST.get('nome_produto')
@@ -169,13 +301,13 @@ def Estoque(request):
             categoria_id = request.POST.get('categoria')
             print("categoria_id recebido:", categoria_id)
             try:
-                categoria_obj = categorias.objects.get(id=categoria_id)
-            except categorias.DoesNotExist:
+                categoria_obj = Categorias_Produtos.objects.get(id=categoria_id)
+            except Categorias_Produtos.DoesNotExist:
                 messages.error(request, "Categoria selecionada é inválida.")
                 print("Categoria selecionada é inválida.")
-                return redirect('estoque')
+                return redirect('produtos')
 
-            categoria_obj = categorias.objects.get(id=categoria_id)
+            categoria_obj = Categorias_Produtos.objects.get(id=categoria_id)
             descricao = request.POST.get('descricao')
             imagem_produto = request.FILES.get('imagem-produto')
             valor = request.POST.get('valor')
@@ -199,7 +331,7 @@ def Estoque(request):
                     img_produto = imagem_produto,
                         
                 )
-                return redirect('estoque')
+                return redirect('produtos')
             
         if "form_editar_produto" in request.POST:
             produto_id = request.POST.get('produto_id')
@@ -215,7 +347,7 @@ def Estoque(request):
                 
                 categoria_id = request.POST.get('categoria')
                 if categoria_id:
-                    produto.categoria = categorias.objects.get(id=categoria_id)
+                    produto.categoria = Categorias_Produtos.objects.get(id=categoria_id)
                 
                 if 'imagem-produto' in request.FILES:
                     produto.img_produto = request.FILES['imagem-produto']
@@ -223,11 +355,11 @@ def Estoque(request):
                 produto.save()
                 messages.success(request, "Produto atualizado com sucesso!")
                 print("Produto atualizado com sucesso!")
-                return redirect('estoque')
+                return redirect('produtos')
                 
             except Exception as e:
                 messages.error(request, f"Erro ao atualizar produto: {str(e)}")
-                return redirect('estoque')
+                return redirect('produtos')
             
     categoria_id = request.GET.get('categoria', 'all')
     print("categoria_id enviado:", categoria_id)
@@ -235,15 +367,16 @@ def Estoque(request):
         produtos = Produto.objects.all()        
     else:
         try:
-            categoria_obj = categorias.objects.get(id=categoria_id)
+            categoria_obj = Categorias_Produtos.objects.get(id=categoria_id)
             produtos = Produto.objects.filter(categoria=categoria_obj)
-        except categorias.DoesNotExist:
+        except Categorias_Produtos.DoesNotExist:
             produtos = Produto.objects.none()
             messages.error(request, "Categoria não encontrada.")
 
     for produto in produtos:
         estoque_atual = produto.estoque_atual or 0
         estoque_maximo = produto.estoque_maximo or 1  
+        estoque_minimo = produto.estoque_minimo or 1  
         
         if estoque_maximo == 0:
             porcentagem = 0
@@ -251,23 +384,8 @@ def Estoque(request):
             porcentagem = (estoque_atual / estoque_maximo) * 100 if estoque_atual > 0 else 0
         
         produto.barra = min(porcentagem, 100)
-        produto.em_falta = estoque_atual == 10
-    return render(request, 'site/Estoque.html', {'produtos': produtos, 'categorias': categorias_lista })
+        produto.em_falta = estoque_atual <= estoque_minimo
+    return render(request, 'site/produtos.html', {'produtos': produtos, 'categorias': categorias_lista })
 
-def newPassword(request):
-    return render(request, 'resetsenha/resetPassword.html')
-
-def editar_produto(request):
-    if request.method == 'POST' and 'form_editar_produto' in request.POST:
-        produto_id = request.POST.get('produto_id')
-        nome = request.POST.get('nome_produto')
-        quantidade = request.POST.get('quantidade')
-        # e assim por diante...
-
-        produto = Produto.objects.get(id=produto_id)
-        produto.nome_produto = nome
-        produto.estoque_atual = quantidade
-        # etc...
-
-        produto.save()
-        return redirect('estoque')  # ou render, com contexto
+def Vendas(request):
+    return render(request, 'site/Vendas.html')

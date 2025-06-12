@@ -15,7 +15,6 @@ urlpatterns = [
      path('estoque/', views.Estoque, name='estoque'),
 
      path('redefinir-senha/<uuid:token>/', views.redefinir_senha, name='resetpassword_form'),
-     path('newpassword/', views.newPassword, name='resetPassword'),
 ]
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

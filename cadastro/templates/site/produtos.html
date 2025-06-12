@@ -1,84 +1,222 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Roupas Prontas</title>
-    <link rel="stylesheet" href="produto.css">
-    <link rel="stylesheet" href="botao-flutuante.css">
+    <title>Produtos</title>
+    <link rel="stylesheet" href="{% static 'CSS/produtos.css' %}">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
-    <link rel="icon" href="./imagens/icon logo TecGestão.png" type="image/x-icon">
+    <link rel="icon" href="{% static 'imagens/icon logo TecGestão.png' %}" type="image/x-icon">
 </head>
 <body>
+
+    <!-- Menu Lateral -->
     <nav class="menu-lateral">
         <div class="bnt-expandir">
             <i class="bi bi-list"></i>
         </div>
         <ul>
-            <li class="item-menu"><a href="Telainicial.html"><span class="icon"><i class="bi bi-house"></i></span><span class="txt-link">Início</span></a></li>
-            <li class="item-menu"><a href="planilhas.html"><span class="icon"><i class="bi bi-collection"></i></span><span class="txt-link">Planilhas</span></a></li>
-            <li class="item-menu"><a href="Estoque.html"><span class="icon"><i class="bi bi-box-seam"></i></span><span class="txt-link">Estoque</span></a></li>
-            <li class="item-menu"><a href="#"><span class="icon"><i class="bi bi-cart3"></i></span><span class="txt-link">Produtos</span></a></li>
-            <li class="item-menu"><a href="Vendas.html"><span class="icon"><i class="bi bi-coin"></i></span><span class="txt-link">Vendas</span></a></li>
+            <li class="item-menu">
+                <a href="{% url 'home' %}">
+                    <span class="icon"><i class="bi bi-house"></i></span>
+                    <span class="txt-link">Início</span>
+                </a>
+            </li>
+            <li class="item-menu">
+                <a href="{% url 'planilhas' %}">
+                    <span class="icon"><i class="bi bi-collection"></i></span>
+                    <span class="txt-link">Planilhas</span>
+                </a>
+            </li>
+            <li class="item-menu">
+                <a href="{% url 'estoque' %}">
+                    <span class="icon"><i class="bi bi-box-seam"></i></span>
+                    <span class="txt-link">Estoque</span>
+                </a>
+            </li>
+            <li class="item-menu">
+                <a href="#">
+                    <span class="icon"><i class="bi bi-cart3"></i></span>
+                    <span class="txt-link">Produtos</span>
+                </a>
+            </li>
+            <li class="item-menu">
+                <a href="{% url 'vendas' %}">
+                    <span class="icon"><i class="bi bi-coin"></i></span>
+                    <span class="txt-link">Vendas</span>
+                </a>
+            </li>
         </ul>
     </nav>
 
-    <div class="container" id="product-list">
-        <div class="card">
-            <img src="./imagens/camisa xadres.jpg" alt="Camisa Xadrez">
-            <div><h1>Camisa Xadrez</h1><h2>Disponível</h2><span>30/50</span></div>
+    <!-- Conteúdo principal -->
+<div class="container" style="margin-left: 80px;">
+        
+        <!-- Filtros -->
+        <div class="filtros">
+            <label for="categoria">Selecione a categoria:</label>
+            <select id="categoria" onchange="filtrarCategoria()">
+                <option value="all">Todos</option>
+                <option value="Tecido">Tecido</option>
+                <option value="Linha">Linha</option>
+                <option value="Botões">Botões</option>
+                <option value="Outros">Outros</option>
+            </select>
         </div>
-        <div class="card">
-            <img src="./imagens/roupas-country-calca-jeans-masculino-azul-marinho-mcs7700-p-1722291814355.jpg" alt="Calça Jeans Country">
-            <div><h1>Calça Jeans Country</h1><h2>Disponível</h2><span>15/40</span></div>
+
+        <!-- Aviso de Falta -->
+        <div class="aviso-falta" id="aviso-falta">
+            <h2>Produtos em falta ou com baixa quantidade:</h2>
+            <ul id="aviso-falta-lista"></ul>
         </div>
-        <div class="card">
-            <img src="./imagens/botadecouro.jpg" alt="Bota de Couro">
-            <div><h1>Bota de Couro</h1><h2>Disponível</h2><span>10/25</span></div>
-        </div>
-        <div class="card">
-            <img src="./imagens/vestido_festa_debutante_curto_azul_1421_1_1fc9d726428ef1bb4e8c83417e962c42.webp" alt="Vestido Festa">
-            <div><h1>Vestido Festa</h1><h2>Disponível</h2><span>5/20</span></div>
-        </div>
-        <div class="card">
-            <img src="./imagens/conjunto social feminino.jpg" alt="Conjunto Social">
-            <div><h1>Conjunto Social</h1><h2>Disponível</h2><span>12/30</span></div>
-        </div>
-        <div class="card">
-            <img src="./imagens/roupaSocialMasculina.jpg" alt="Roupa Social Masculina">
-            <div><h1>Roupa Social Masculina</h1><h2>Disponível</h2><span>8/20</span></div>
+
+        <!-- Cards de Produtos -->
+    <div class="cards-container">
+    {% for produto in produtos %}
+    <div class="card">
+        <img src="{{ produto.img_produto.url }}" alt="{{ produto.nome_produto }}">
+        <h1>{{ produto.nome_produto }}</h1>
+        <h2>Quantidade</h2>
+        <span>{{ produto.estoque_atual }} / {{ produto.estoque_maximo }}</span>
+
+        <form method="POST" class="estoque-form">
+            {% csrf_token %}
+            <label for="estoque_{{ produto.id }}">Quantidade atual:</label>
+            <input type="number" name="estoque_{{ produto.id }}" value="{{ produto.estoque_atual }}" min="0">
+            <input type="hidden" name="produto_id" value="{{ produto.id }}">
+            
+            <div class="grafico">
+                <div class="grafico-barra"
+                    style="width: {{ produto.barra }}%;
+                    background-color: {% if produto.em_falta %}#e74c3c{% else %}#16A085{% endif %};">
+                </div>
+            </div>
+            
+            <button type="submit" name="atualizar_estoque">Atualizar</button>
+        </form>
+        
+        <button class="button_edit_product"
+                data-id="{{ produto.id }}" 
+                data-nome="{{ produto.nome_produto }}"
+                data-quantidade="{{ produto.estoque_atual }}"
+                data-min="{{ produto.estoque_minimo }}"
+                data-max="{{ produto.estoque_maximo }}"
+                data-descricao="{{ produto.descricao }}"
+                data-custo="{{ produto.custo_producao }}"
+                data-valor="{{ produto.preco }}"
+                data-categoria="{{ produto.categoria.id }}"
+                data-imagem="{{ produto.img_produto.url }}"
+                onclick="abrirModalEditar(this)">
+            Editar
+        </button>
+    </div>
+    {% empty %}
+    <p>Nenhum produto encontrado.</p>
+    {% endfor %}
+</div>
+
+
+        <!-- Botão flutuante "+" -->
+        <button id="abrirModal" class="botao-adicionar">+</button>
+
+        <!-- Modal de Cadastro -->
+        <div class="modal" id="modalCadastro">
+            <div class="modal-conteudo">
+                <span class="fechar" id="fecharModal">&times;</span>
+                <h2>Cadastrar Novo Produto</h2>
+                <form name="form_newItem" id="formCadastro" method="POST" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <input type="text" name="nome_produto" id="nome-produto" placeholder="Nome do produto" required />
+                    <input type="number" name="quantidade" id="quantidade-produto" placeholder="Quantidade atual" required />
+                    <input type="number" name="quantidade-min" id="quantidade-min-produto" placeholder="Quantidade Mínima" required />
+                    <input type="number" name="quantidade-max" id="quantidade-max-produto" placeholder="Quantidade Máxima" required />
+                    <textarea name="descricao" id="descricao" placeholder="Descrição"></textarea>
+                    <input type="number" name="custo_producao" step="0.01" min="0.01" id="custo_producao" placeholder="custo producao" required />
+                    <input type="number" step="0.01" min="0.01" name="valor" id="valor" placeholder="Valor" required />
+
+                    <div class="category_in_form_new_produto">
+                    <select name="categoria" id="categoria-produto" required>
+                        {% for c in categorias %}
+                        <option value="{{ c.id }}">{{ c.nome }}</option>
+                        {% endfor %}  
+                    </select>
+                    <button type="button" id="button_new_category">+</button>
+                    </div>
+                    <label for="imagem-url" style="margin-top: 10px;">Imagem do produto:</label>
+                    <input type="file" name="imagem-produto" id="imagem-url" accept="image/*">
+                    <img id="imagem-preview" style="display:none; max-width: 100px; margin-top: 10px;" />
+
+                    <button type="submit" name="form_newItem">Cadastrar</button>
+                </form>
+            </div>
         </div>
     </div>
+    <!-- End Modal de Cadastro -->
 
-    <button class="botao-adicionar" onclick="abrirModal()">+</button>
+<!-- Modal de Edição -->
+<div class="modal" id="modalEditar">
+    <div class="modal-conteudo">
+        <span class="fechar" onclick="fecharModalEditar()">&times;</span>
+        <h2>Editar Produto</h2>
+        <form id="formEditar" method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            <input type="hidden" name="produto_id" id="editar-produto-id">
+            <input type="text" name="nome_produto" id="editar-nome-produto" placeholder="Nome do produto" required />
+            <input type="number" name="quantidade" id="editar-quantidade" placeholder="Quantidade atual" required />
+            <input type="number" name="quantidade-min" id="editar-quantidade-min" placeholder="Quantidade Mínima" required />
+            <input type="number" name="quantidade-max" id="editar-quantidade-max" placeholder="Quantidade Máxima" required />
+            <textarea name="descricao" id="editar-descricao" placeholder="Descrição"></textarea>
+            <input type="number" name="custo_producao" step="0.01" min="0.01" id="editar-custo-producao" placeholder="Custo produção" required />
+            <input type="number" step="0.01" min="0.01" name="valor" id="editar-valor" placeholder="Valor" required />
 
-    <div class="modal" id="modal">
-        <div class="modal-conteudo">
-            <span class="fechar" id="fecharModal">&times;</span>
-            <h2>Cadastrar Novo Produto</h2>
-            <form id="formCadastro">
-                <input type="text" id="nome-produto" placeholder="Nome do produto" required />
-                <input type="number" id="quantidade-produto" placeholder="Quantidade atual" required />
-                <input type="number" id="estoque-minimo" placeholder="Quantidade máxima" required />
+            <select name="categoria" id="editar-categoria" required>
+                {% for c in categorias %}
+                <option value="{{ c.id }}">{{ c.nome }}</option>
+                {% endfor %}  
+            </select>
 
-                <select id="categoria-produto" required>
-                    <option value="">Selecione a categoria</option>
-                    <option value="Tecido">Tecido</option>
-                    <option value="Linha">Linha</option>
-                    <option value="Botões">Botões</option>
-                    <option value="Outros">Outros</option>
-                </select>
+            <label for="editar-imagem-url" style="margin-top: 10px;">Imagem do produto:</label>
+            <input type="file" name="imagem-produto" id="editar-imagem-url" accept="image/*">
+            <img id="editar-imagem-preview" style="max-width: 100px; margin-top: 10px;" />
 
-                <label for="imagem-url" style="margin-top: 10px;">Imagem do produto:</label>
-                <input type="file" id="imagem-url" accept="image/*">
-                <img id="imagem-preview" style="display:none; max-width: 100px; margin-top: 10px;" />
+            <button type="submit" name="form_editar_produto">Salvar Alterações</button>
+        </form>
+    </div>
+</div>
 
-                <button type="submit">Cadastrar</button>
+    <!-- start security_close_modal -->
+    <div class="security_close_modal">
+        <div class="security_close_modal" id="select_close_modal" >
+            <h3>Você quer continuar?</h3>
+            <p>O produto não sera salvo!</p>
+            <button id="sim">Sim</button>
+            <button id="nao">Não</button>
+        </div>
+    </div>
+    <!-- end security_close_modal -->
+
+    <div id="backend_form_new_category">
+        {% if messages %}
+          {% for message in messages %}
+              <li class="{{ message.tags }}">{{ message }}</li>
+          {% endfor %}
+      {% endif %}
+        <div class="form_new_category" id="form_new_category">
+            <form method="POST" class="">
+                {% csrf_token %}
+                <span class="fechar" id="fecharModal_new_category">&times;</span>
+                <input type="text"  id="new_category" name="new_category" placeholder="ex:Camiseta">
+                <button type="submit" id="button_register_category" name="button_register_category" class="button_register_category">Registrar Categoria</button>
             </form>
         </div>
     </div>
-    
 
-    <script src="produtos.js"></script>
+
+
+
+    <!-- Script JS externo -->
+    <script src="{% static 'JSs/produtos.js' %}"></script>
+
 </body>
 </html>
