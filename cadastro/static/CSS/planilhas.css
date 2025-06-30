@@ -1,0 +1,288 @@
+body {
+    color: white;
+    background-image: linear-gradient(110deg, rgb(19, 110, 172), rgb(213, 218, 235));
+    height: 100vh;
+    margin: 0;
+}
+
+nav.menu-lateral {
+    width: 74px;
+    height: 100%;
+    background-color: rgb(61, 58, 58);
+    padding: 30px 0 20px 0%;
+    box-shadow: 2.5px 0 0 rgb(0, 204, 204);
+    z-index: 2;
+    position: fixed;
+    top: 0;
+    left: 0;
+    overflow: hidden;
+    transition: .2s;
+}
+
+nav.menu-lateral:hover {
+    width: 245px;
+}
+
+.bnt-expandir {
+    width: 100%;
+    padding: 6px;
+}
+
+.bnt-expandir > i {
+    color: aqua;
+    padding: 20px 15px;
+    border: none;
+    font-size: 35px;
+    cursor: pointer;
+}
+
+ul {
+    height: 100%;
+    list-style-type: none;
+}
+
+ul li.item-menu a {
+    color: aliceblue;
+    text-decoration: none;
+    font-size: 25px;
+    padding: 25px 6%;
+    display: flex;
+    margin-bottom: 20px;
+    line-height: 35px;
+}
+
+ul li.item-menu a .txt-link {
+    margin-left: 25px;
+    text-decoration: none;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+ul li.item-menu a .icon > i {
+    font-size: 35px;
+    margin-left: -18.5px;
+}
+
+ul li.item-menu:hover {
+    background: rgb(0, 204, 204);
+    margin-left: -20%;
+    padding-left: 20px;
+}
+
+.adicionar-planilha {
+    background-color: rgba(255, 255, 255, 0.759);
+    position: fixed;
+    padding: 7vh;
+    padding-top: 9vh;
+    padding-bottom: 12vh;
+    top: 15%;
+    left: 5%;
+    border: solid 1px black;
+    border-radius: 15px;
+    border-style: dotted;
+    font-size: 5.5vh;
+    cursor: pointer;
+    transition: font-size 0.3s, left 0.3s;
+}
+
+.adicionar-planilha:hover {
+    font-size: 6vh;
+    left: 4.5%;
+    padding: 7vh;
+    padding-top: 9vh;
+    padding-bottom: 12vh;
+}
+
+#iconMais {
+    color: rgba(18, 17, 17, 0.827);
+}
+
+.hover-margem {
+    margin: 3vh;
+    padding: 2vh;
+    background-color: lightgray;
+    transition: background-color 0.3s;
+}
+
+ul li.item-menu {
+    transition: .2s;
+}
+/* end barra lateral */
+
+#window-new-spreadsheet {
+    margin: 0;
+    position: absolute;
+    z-index: 1000;
+    display: FLEX;
+    background-color: rgba(255, 255, 255, 0.479);
+    width: 100%;
+    height: 100%;
+}
+
+.window-spreadsheet {
+    background-color: rgb(71, 77, 83);
+    width: 85%;
+    height: 85%;
+    margin: auto;
+    border-radius: 4vh;
+}
+
+.inputs-wspreadsheet {
+    margin: 5vh;
+    padding: 1vh;
+    border-radius: 1vh;
+    border: none;
+}
+
+.buttons-wspreadsheet {
+    padding-inline: 3vh;
+    padding-block: 1vh;
+    border-radius: 1.5vh;
+    border: none;
+    position: absolute;
+    cursor: pointer;
+    font-size: 140%;
+}
+
+#cancel-nspreadsheet {
+    background-color: rgb(255, 6, 6);
+    top: 80%;
+    left: 60%;
+}
+
+#save-nspreadsheet {
+    background-color: chartreuse;
+    top: 80%;
+    left: 30%;
+}
+
+.form-imgs {
+    display: flex;
+    width: 150%;
+    height: 70%;
+    border: solid black 1px;
+    border-style: hidden;
+}
+
+.upload-img-input {
+    margin-left: 2%;
+    margin-top: 2%;
+    width: 25%;
+    height: 50%;
+    border: solid black 2px;
+    background-color: rgb(97, 97, 97);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1%;
+    padding-top: 10%;
+}
+
+.area-principal {
+    margin-left: 300px;
+    padding: 30px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    align-items: flex-start;
+    margin-top: 80px;
+    position: absolute;
+    z-index: 1;
+}
+
+#lista-planilhas {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 50px;
+    justify-content: flex-start;
+    margin-top: 34px;
+}
+
+#lista-planilhas > div {
+    background-color: #f4f6f9;
+    color: #333;
+    padding: 20px;
+    border-radius: 10px;
+    width: 200px;
+    height: 220px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease;
+}
+
+#lista-planilhas > div:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 25px rgba(0,0,0,0.15);
+    background-color: #e0e4e8;
+}
+
+#lista-planilhas > div img {
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+    border-radius: 10px;
+    margin-bottom: 15px;
+}
+
+#lista-planilhas > div span {
+    font-weight: bold;
+    font-size: 16px;
+}
+
+.botao-excluir {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    background-color: #FF6347;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    padding: 8px;
+    cursor: pointer;
+    font-size: 18px;
+    transition: background-color 0.3s, transform 0.2s;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+}
+
+.botao-excluir:hover {
+    background-color: #FF4500;
+    transform: scale(1.1);
+}
+
+.botao-excluir:active {
+    transform: scale(0.95);
+}
+
+#window-new-spreadsheet {
+    display: none;
+}
+
+.upload-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    background-color: #00cccc;
+    color: white;
+    padding: 15px 25px;
+    font-size: 18px;
+    font-weight: bold;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    margin: auto;
+}
+
+.upload-btn:hover {
+    background-color: #009999;
+    transform: scale(1.05);
+}
+
+.upload-btn i {
+    font-size: 20px;
+}

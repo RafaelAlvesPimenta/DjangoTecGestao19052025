@@ -1,0 +1,44 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>cadastro</title>
+    <link rel="stylesheet" href="{% static 'CSS/cadastro.css' %}">
+       
+           
+</head>
+<body>
+    <div>
+    <h1>Cadastro</h1>
+    <form method="post">
+        {% csrf_token %}
+        {% if messages %}
+            {% for message in messages %}
+                <li class="{{ message.tags }}">{{ message }}</li>
+            {% endfor %}
+        {% endif %}
+        <br><br>
+    <input type="text" required name="first_name" placeholder="Primeiro nome">
+    <br><br>
+    <input type="text" required name="last_name" placeholder="Ultimo nome">
+    <br><br>
+    <input type="password" required name="senha" placeholder="Senha">
+    <br><br>
+    <input type="text" required name="cpf" placeholder="CPF">
+    <br><br>
+    <input type="email" required name="email" placeholder="Email">
+    <br><br>
+    <input type="text" required name="telefone" placeholder="📞Telefone">
+    <br><br>
+
+    <button> Cadastrar </button>
+    <br><br>
+</form>
+    <a href="{% url 'login' %}">Já tem uma conta?</a>
+
+    </div>
+</body>
+</html>

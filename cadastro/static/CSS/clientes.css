@@ -1,0 +1,115 @@
+body {
+   color: white;
+   background-image: linear-gradient(110deg, rgb(19, 110, 172), rgb(213, 218, 235));
+   height: 100vh;
+   margin: 0;
+   font-family: Arial, Helvetica, sans-serif;
+}
+
+/* body.noscroll {
+  overflow: hidden;
+} */
+
+/* start barra lateral */
+nav.menu-lateral {
+    width: 74px;
+    height: 100%;
+    background-color: rgb(61, 58, 58);
+    padding: 30px 0 20px 0%;
+    box-shadow: 2.5px 0 0 rgb(0, 204, 204);
+    z-index: 2;
+    position: fixed;
+    top: 0;
+    left: 0;
+    overflow: hidden;
+    transition: .2s;
+}
+
+nav.menu-lateral:hover {
+    width: 245px;
+}
+
+.bnt-expandir {
+    width: 100%;
+    padding: 6px;
+}
+
+.bnt-expandir > i {
+    color: aqua;
+    padding: 20px 15px;
+    border: none;
+    font-size: 35px;
+    cursor: pointer;
+}
+
+ul {
+    height: 100%;
+    list-style-type: none;
+}
+
+ul li.item-menu a {
+    color: aliceblue;
+    text-decoration: none;
+    font-size: 25px;
+    padding: 25px 6%;
+    display: flex;
+    margin-bottom: 20px;
+    line-height: 35px;
+}
+
+ul li.item-menu a .txt-link {
+    margin-left: 25px;
+    text-decoration: none;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+ul li.item-menu a .icon > i {
+    font-size: 35px;
+    margin-left: -18.5px;
+}
+
+ul li.item-menu:hover {
+    background: rgb(0, 204, 204);
+    margin-left: -20%;
+    padding-left: 20px;
+}
+
+.adicionar-planilha {
+    background-color: rgba(255, 255, 255, 0.759);
+    position: fixed;
+    padding: 7vh;
+    padding-top: 9vh;
+    padding-bottom: 12vh;
+    top: 15%;
+    left: 5%;
+    border: solid 1px black;
+    border-radius: 15px;
+    border-style: dotted;
+    font-size: 5.5vh;
+    cursor: pointer;
+    transition: font-size 0.3s, left 0.3s;
+}
+
+.adicionar-planilha:hover {
+    font-size: 6vh;
+    left: 4.5%;
+    padding: 7vh;
+    padding-top: 9vh;
+    padding-bottom: 12vh;
+}
+
+#iconMais {
+    color: rgba(18, 17, 17, 0.827);
+}
+
+.hover-margem {
+    margin: 3vh;
+    padding: 2vh;
+    background-color: lightgray;
+    transition: background-color 0.3s;
+}
+
+ul li.item-menu {
+    transition: .2s;
+}
+/* end barra lateral */

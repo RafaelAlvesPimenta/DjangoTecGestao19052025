@@ -1,0 +1,38 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TecGestão(Login)</title>
+    <link rel="stylesheet" href="{% static 'cadastro/Login.css' %}">
+       
+           
+</head>
+<body>
+    <div>
+    <h1>Login</h1>
+    <form  method="post">
+        {% csrf_token %}
+        {% if messages %}
+            {% for message in messages %}
+                <li class="{{ message.tags }}">{{ message }}</li>
+            {% endfor %}
+        {% endif %}
+        <br><br>
+    <input type="text" required name="nome" placeholder="Nome">
+    <br><br>
+    <input type="password" required name="senha" placeholder="Senha">
+    <br><br>
+    <input type="text" required name="cpf_cnpj" placeholder="CPF/CNPJ">
+    <br><br>
+    <button type="submit"> Entrar </button>
+    <br><br>
+</form>
+    <a href="{% url 'resetPasswordEmail' %}">Esqueceu sua Senha?</a>
+    <br>
+    <a href="{% url 'cadastro' %}">Ainda não tem uma conta?</a>
+
+    </div>
+</body>
+</html>

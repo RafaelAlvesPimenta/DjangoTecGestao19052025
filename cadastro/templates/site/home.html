@@ -1,0 +1,107 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TecGestão</title>
+    <link rel="stylesheet" href="{% static 'CSS/Telainicial.css' %}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+</head>
+<body>
+   
+    <div id="div1">
+        <form action=" " method="get">
+    <button class="image-button">
+        <img src="imagens/Design sem nome.jpg"></img>
+    </button>
+</form>
+    </div>
+
+
+<nav class="menu-lateral">
+
+
+    <div class="bnt-expandir">
+        <i class="bi bi-list"></i>
+    </div>
+
+
+    <ul>
+
+        <li class="item-menu">
+            <a href="#">
+                <span class="icon"><i class="bi bi-house"></i></span>
+                <span class="txt-link">Inicio</span>
+            </a>
+        </li>
+
+        <li class="item-menu">
+            <a href="{% url 'planilhas' %}">
+                <span class="icon"><i class="bi bi-collection"></i></span>
+                <span class="txt-link">Planilhas</span>
+            </a>
+        </li>
+
+        <li class="item-menu">
+            <a href="{% url 'estoque' %}">
+                <span class="icon"><i class="bi bi-box-seam"></i></span>
+                <span class="txt-link">Estoque</span>
+            </a>
+        </li>
+
+        <li class="item-menu">
+            <a href="{% url 'produtos' %}">
+                <span class="icon"><i class="bi bi-cart3"></i></span>
+                <span class="txt-link">Produtos</span>
+            </a>
+        </li>
+        <li class="item-menu">
+            <a href="{% url 'clientes' %}">
+                <span class="icon"><i class="bi bi-box-seam"></i></span>
+                <span class="txt-link">Estoque</span>
+            </a>
+        </li>
+        <li class="item-menu">
+            <a href="{% url 'vendas' %}">
+                <span class="icon"><i class="bi bi-coin"></i></span>
+                <span class="txt-link">Vendas</span>
+            </a>
+        </li>
+    </ul>
+</nav>
+
+<button id="comando-d-voz"></button>
+
+<section class="status">
+    <div class="info-total">
+        <h2 class="title-ifor">Receita-diaria</h2>
+        <span class="infor-span" id="Receita-diaria"></span>
+    </div>
+    <div class="info-total">
+        <h2 class="title-ifor">Novos Clientes</h2>
+        <span class="infor-span" id="new-Client"></span>
+    </div>
+    <div class="info-total">
+        <h2 class="title-ifor">Pedidos Pendentes</h2>
+        <span class="infor-span" id="peding-orders"></span>
+    </div>
+    <div class="info-total">
+        <h2 class="title-ifor">Pedidos em Andamento</h2>
+        <span class="infor-span" id="peding-progress"></span>
+    </div>
+</section>
+
+<div id="Grafico-barras">
+    <canvas id="myChart"></canvas>
+  </div>
+
+  <div id="grafico-rosca">
+    <canvas id="myChart-rosca"></canvas>
+    <h2 class="title-gros">Meta Mensal</h2>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="{% static 'JSs/Telainicial.js'%}"></script>
+</body>
+</html>
