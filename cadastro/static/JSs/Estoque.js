@@ -194,7 +194,10 @@
 
     // Função para abrir o modal de edição
 function abrirModalEditar(botao) {
+<<<<<<< HEAD
     document.body.classList.add('noscroll');
+=======
+>>>>>>> e4fd9b255f47938380b6d371c8af2c933a7be891
     // Obter todos os dados do produto dos atributos data-*
     const produto = {
         id: botao.getAttribute('data-id'),
@@ -234,7 +237,10 @@ function abrirModalEditar(botao) {
 
 // Função para fechar o modal de edição
 function fecharModalEditar() {
+<<<<<<< HEAD
     document.body.classList.remove('noscroll');
+=======
+>>>>>>> e4fd9b255f47938380b6d371c8af2c933a7be891
     security_close_modal.forEach(modal => {
         modal.style.display = 'flex';
       });

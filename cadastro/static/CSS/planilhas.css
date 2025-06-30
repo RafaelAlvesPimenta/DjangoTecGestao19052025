@@ -20,7 +20,11 @@ nav.menu-lateral {
 }
 
 nav.menu-lateral:hover {
+<<<<<<< HEAD
     width: 245px;
+=======
+    width: 230px;
+>>>>>>> e4fd9b255f47938380b6d371c8af2c933a7be891
 }
 
 .bnt-expandir {
@@ -44,11 +48,19 @@ ul {
 ul li.item-menu a {
     color: aliceblue;
     text-decoration: none;
+<<<<<<< HEAD
     font-size: 25px;
     padding: 25px 6%;
     display: flex;
     margin-bottom: 20px;
     line-height: 35px;
+=======
+    font-size: 30px;
+    padding: 25px 4%;
+    display: flex;
+    margin-bottom: 20px;
+    line-height: 30px;
+>>>>>>> e4fd9b255f47938380b6d371c8af2c933a7be891
 }
 
 ul li.item-menu a .txt-link {
@@ -106,7 +118,10 @@ ul li.item-menu:hover {
 ul li.item-menu {
     transition: .2s;
 }
+<<<<<<< HEAD
 /* end barra lateral */
+=======
+>>>>>>> e4fd9b255f47938380b6d371c8af2c933a7be891
 
 #window-new-spreadsheet {
     margin: 0;

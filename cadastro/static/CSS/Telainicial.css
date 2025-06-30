@@ -30,6 +30,7 @@ button{
    border-radius: 50%;
 }
 
+<<<<<<< HEAD
 /*start barra lateral*/
 nav.menu-lateral {
     width: 74px;
@@ -133,6 +134,82 @@ ul li.item-menu {
     transition: .2s;
 }
 /* end barra lateral */
+=======
+/*começo barra lateral*/
+nav.menu-lateral{
+   width: 68px;
+   height: 100%;
+   background-color: rgb(61, 58, 58);
+   padding: 30px 0 20px 0%;
+   box-shadow: 2.5px 0 0 rgb(0, 204, 204);
+   z-index: 2;
+   position: fixed;
+   top: 0;
+   left: 0;
+   overflow: hidden;
+   transition: .2s;
+}
+
+nav.menu-lateral:hover{
+width: 230px;
+}
+
+.bnt-expandir{
+   width: 100%;
+   padding: 6px;
+}
+
+.bnt-expandir > i{
+   color: aqua;
+   padding: 20px 15px;
+   border: none;
+   font-size: 35px;
+   cursor: pointer;
+}
+
+ul{
+   height: 100%;
+   list-style-type: none;
+}
+
+ul li.item-menu a {
+   color: aliceblue;
+   text-decoration: none;
+   font-size: 30px;
+   padding: 17px 4%;
+   display: flex;
+   margin-bottom: 20px;
+   line-height: 30px;
+}
+
+ul li.item-menu a .txt-link{
+   margin-left: 25px;
+   text-decoration: none;
+   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+ul li.item-menu a .icon > i{
+font-size: 35px;
+margin-left: -18.5px;
+}
+ul li.item-menu:hover{
+   background: rgb(0, 204, 204);
+   margin-left: -20%;
+   padding-left: 20px;
+}
+
+.hover-margem{
+   margin: 20px;
+   padding: 20px;
+   background-color: lightgray;
+   transition: background-color 0.3s;
+}
+
+ul li.item-menu{
+   transition: .2s;
+}
+/*fim barra lateral*/
+>>>>>>> e4fd9b255f47938380b6d371c8af2c933a7be891
 
 #Grafico-barras{
    display: flex;

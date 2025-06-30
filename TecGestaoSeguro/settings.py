@@ -110,16 +110,25 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/5.2/topics/i18n/
 
+<<<<<<< HEAD
 LANGUAGE_CODE = 'pt-br'
 
 TIME_ZONE = 'America/Sao_Paulo'
+=======
+LANGUAGE_CODE = 'en-us'
+
+TIME_ZONE = 'UTC'
+>>>>>>> e4fd9b255f47938380b6d371c8af2c933a7be891
 
 USE_I18N = True
 
 USE_TZ = True
 
+<<<<<<< HEAD
 AUTH_USER_MODEL = 'cadastro.Usuario'
 
+=======
+>>>>>>> e4fd9b255f47938380b6d371c8af2c933a7be891
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.2/howto/static-files/

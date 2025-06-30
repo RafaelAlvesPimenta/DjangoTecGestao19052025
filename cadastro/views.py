@@ -2,8 +2,13 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.http import HttpResponse
 from django.contrib.auth.hashers import make_password, check_password
+<<<<<<< HEAD
 from .models import Empresa, Usuario, Categorias_Produtos, Unidade_medida, Unidade_compra, Categorias_Materia_prima, MateriaPrima, Produto
 from django.contrib.auth import authenticate, login, logout
+=======
+from .models import Usuario, Categorias_Produtos, Unidade_medida, Unidade_compra, Categorias_Materia_prima, MateriaPrima, Produto
+from django.contrib.auth import authenticate, login
+>>>>>>> e4fd9b255f47938380b6d371c8af2c933a7be891
 from django.contrib.auth.decorators import login_required
 from django.utils.html import strip_tags
 from django.core.mail import EmailMultiAlternatives
@@ -16,6 +21,7 @@ from django.contrib.auth.forms import SetPasswordForm
      
 
 
+<<<<<<< HEAD
 #start cadastro empresa
 def cadastrar_empresa(request):
     if request.method == 'POST':
@@ -106,6 +112,41 @@ def cadastrar_usuario(request):
             return redirect('home')
         
     return render(request, 'cadastro/cadastrouser.html')
+=======
+#start cadastro usuários
+def cadastrar_usuario(request):
+    if request.method == 'POST':
+            nome = request.POST.get('nome')
+            senha = request.POST.get('senha')
+            cpf_cnpj = request.POST.get('cpf_cnpj')
+            email = request.POST.get('email')
+            telefone = request.POST.get('telefone')
+
+            if Usuario.objects.filter(email=email).exists():
+                messages.error(request, 'Este e-mail já está cadastrado.')
+                return redirect('cadastro')
+
+            if Usuario.objects.filter(cpf_cnpj=cpf_cnpj).exists():
+                messages.error(request, 'Este CPF/CNPJ já está cadastrado.')
+                return redirect('cadastro')
+            
+            if Usuario.objects.filter(nome=nome).exists():
+                messages.error(request, 'Este Nome já está cadastrado.')
+                return redirect('cadastro')
+            
+            else:
+                Usuario.objects.create(
+                nome=nome,
+                senha=make_password(senha),
+                cpf_cnpj=cpf_cnpj,
+                email=email,
+                telefone=telefone
+                )
+                messages.success(request, 'Usuário cadastrado com sucesso!')
+                return render(request, 'site/home.html')
+            
+    return render(request, 'cadastro/cadastrar.html')
+>>>>>>> e4fd9b255f47938380b6d371c8af2c933a7be891
 #end cadastro usuários
 
 #start login
@@ -114,6 +155,7 @@ def Login_usuario(request):
         if 'form_login' in request.POST:
             nome = request.POST.get('nome')
             senha = request.POST.get('senha')
+<<<<<<< HEAD
             cpf = request.POST.get('cpf_cnpj')
             
             try:
@@ -125,11 +167,27 @@ def Login_usuario(request):
                     return redirect('home')
                 else:
                     messages.error(request, "Nome, senha ou CPF incorretos")
+=======
+            cpf_cnpj = request.POST.get('cpf_cnpj')
+            
+            try:
+                usuario = Usuario.objects.get(nome=nome)
+                if check_password(senha, usuario.senha):  
+                    
+                    request.session['usuario_id'] = usuario.id
+                    return redirect('home')
+                else:
+                    messages.error(request, "Senha ou nome incorretos")
+>>>>>>> e4fd9b255f47938380b6d371c8af2c933a7be891
                     return redirect('login')
 
             except Usuario.DoesNotExist:
                 
+<<<<<<< HEAD
                 messages.error(request, "Usuário não encontrado com esse CPF e nome")
+=======
+                messages.error(request, "Usuário não encontrado")
+>>>>>>> e4fd9b255f47938380b6d371c8af2c933a7be891
         elif 'form_resetpassword' in request.POST:
             email = request.POST.get('email')
             usuario = get_object_or_404(Usuario, email=email)
@@ -145,6 +203,10 @@ def Login_usuario(request):
             email_msg = EmailMultiAlternatives(subject, text_content, to=[usuario.email])
             email_msg.attach_alternative(html_content, "text/html")
             email_msg.send()
+<<<<<<< HEAD
+=======
+
+>>>>>>> e4fd9b255f47938380b6d371c8af2c933a7be891
             
     return render(request, 'cadastro/login.html')
 
@@ -176,6 +238,7 @@ def redefinir_senha(request, token):
     return render(request, 'resetsenha/resetPassword.html', {'token': token})
 #end reset password
 
+<<<<<<< HEAD
 @login_required(login_url='login')
 def Home(request):
     return render(request, 'site/home.html', {'loja':Empresa})
@@ -195,6 +258,25 @@ def Planilhas(request):
 def Estoque(request):
     empresa_id = request.session.get('empresa_id')
     categorias_lista = Categorias_Materia_prima.objects.filter(empresa = empresa_id)
+=======
+def Home(request):
+    if 'usuario_id' not in request.session:
+        print('volta')
+        return redirect('login')
+        
+    return render(request, 'site/home.html')
+    
+def logout_usuario(request):
+    request.session.flush()  
+    return redirect('login')
+
+def Planilhas(request):
+    return render(request, 'site/planilhas.html')
+
+
+def Estoque(request):
+    categorias_lista = Categorias_Materia_prima.objects.all()
+>>>>>>> e4fd9b255f47938380b6d371c8af2c933a7be891
 
     if request.method == "POST":
 
@@ -214,7 +296,11 @@ def Estoque(request):
             if Categorias_Materia_prima.objects.filter(nome = new_category).exists():
                 messages.error(request, "Essa categoria já existe")
             else:
+<<<<<<< HEAD
                 Categorias_Materia_prima.objects.create(nome = new_category, empresa_id = empresa_id)
+=======
+                Categorias_Materia_prima.objects.create(nome = new_category)
+>>>>>>> e4fd9b255f47938380b6d371c8af2c933a7be891
                 
 
 
@@ -263,12 +349,18 @@ def Estoque(request):
                     categoria=categoria_obj,
                     fornecedor_preferencial = fornecedor_preferencial,
                     img_material = imagem_material,
+<<<<<<< HEAD
                     empresa_id = empresa_id
+=======
+>>>>>>> e4fd9b255f47938380b6d371c8af2c933a7be891
                     
                 )
                 return redirect('estoque')
             
+<<<<<<< HEAD
 
+=======
+>>>>>>> e4fd9b255f47938380b6d371c8af2c933a7be891
         if "edit_material" in request.POST:
             material_id = request.POST.get('material_id')
             try:
@@ -304,7 +396,11 @@ def Estoque(request):
 
     categoria_id = request.GET.get('categoria', 'all')
 
+<<<<<<< HEAD
     materiais = MateriaPrima.objects.filter(empresa = empresa_id)
+=======
+    materiais = MateriaPrima.objects.all()
+>>>>>>> e4fd9b255f47938380b6d371c8af2c933a7be891
 
     for material in materiais:
         estoque_atual = material.estoque_atual or 0
@@ -328,10 +424,17 @@ def Estoque(request):
 
 
 
+<<<<<<< HEAD
 @login_required(login_url='login')
 def Produtos(request): 
     empresa_id = request.session.get('empresa_id')
     categorias_lista = Categorias_Produtos.objects.filter(empresa = empresa_id)
+=======
+
+
+def Produtos(request): 
+    categorias_lista = Categorias_Produtos.objects.all()
+>>>>>>> e4fd9b255f47938380b6d371c8af2c933a7be891
     if request.method == "POST":
 
         if "atualizar_estoque" in request.POST:
@@ -350,7 +453,11 @@ def Produtos(request):
             if Categorias_Produtos.objects.filter(nome = new_category).exists():
                 messages.error(request, "Essa categoria já existe")
             else:
+<<<<<<< HEAD
                 Categorias_Produtos.objects.create(nome = new_category, empresa_id = empresa_id)
+=======
+                Categorias_Produtos.objects.create(nome = new_category)
+>>>>>>> e4fd9b255f47938380b6d371c8af2c933a7be891
                 messages.success(request, "Categoria criada com sucesso!")
             
 
@@ -359,7 +466,11 @@ def Produtos(request):
             quantidade = request.POST.get('quantidade')
             quantidade_minima = request.POST.get('quantidade-min')
             quantidade_maxima = request.POST.get('quantidade-max')
+<<<<<<< HEAD
             categoria_id = request.POST.get('categoria')      
+=======
+            categoria_id = request.POST.get('categoria')
+>>>>>>> e4fd9b255f47938380b6d371c8af2c933a7be891
             print("categoria_id recebido:", categoria_id)
             try:
                 categoria_obj = Categorias_Produtos.objects.get(id=categoria_id)
@@ -390,7 +501,10 @@ def Produtos(request):
                     estoque_minimo = quantidade_minima,
                     categoria=categoria_obj,
                     img_produto = imagem_produto,
+<<<<<<< HEAD
                     empresa_id = empresa_id,
+=======
+>>>>>>> e4fd9b255f47938380b6d371c8af2c933a7be891
                         
                 )
                 return redirect('produtos')
@@ -426,7 +540,11 @@ def Produtos(request):
     categoria_id = request.GET.get('categoria', 'all')
     print("categoria_id enviado:", categoria_id)
     if categoria_id == 'all':
+<<<<<<< HEAD
         produtos = Produto.objects.filter(empresa = empresa_id)        
+=======
+        produtos = Produto.objects.all()        
+>>>>>>> e4fd9b255f47938380b6d371c8af2c933a7be891
     else:
         try:
             categoria_obj = Categorias_Produtos.objects.get(id=categoria_id)
@@ -450,7 +568,11 @@ def Produtos(request):
     return render(request, 'site/produtos.html', {'produtos': produtos, 'categorias': categorias_lista })
 
 def Vendas(request):
+<<<<<<< HEAD
     return render(request, 'site/vendas.html')
 
 def Clientes(request):
     return render(request, 'site/clientes.html')
+=======
+    return render(request, 'site/Vendas.html')
+>>>>>>> e4fd9b255f47938380b6d371c8af2c933a7be891

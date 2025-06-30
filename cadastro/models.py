@@ -1,6 +1,9 @@
 from django.db import models
 import uuid
+<<<<<<< HEAD
 from django.contrib.auth.models import AbstractUser
+=======
+>>>>>>> e4fd9b255f47938380b6d371c8af2c933a7be891
 from django.utils import timezone
 from datetime import timedelta
 from django.core.validators import MinValueValidator
@@ -8,6 +11,7 @@ from django.core.exceptions import ValidationError
 from django.utils.timezone import now
 
 
+<<<<<<< HEAD
 class Empresa(models.Model):
     empresa_id = models.AutoField(primary_key=True)
     nome = models.CharField(max_length=100, unique=True)
@@ -28,6 +32,17 @@ class Usuario(AbstractUser):
 
     def __str__(self):
         return self.username
+=======
+class Usuario(models.Model):
+    nome = models.CharField(max_length=100, unique=True)
+    senha = models.CharField(max_length=100)
+    email = models.EmailField(max_length=150, unique=True)
+    cpf_cnpj = models.CharField(max_length=20, unique=True)
+    telefone = models.CharField(max_length=20, unique=True)
+
+    def __str__   (self):
+        return self.nome
+>>>>>>> e4fd9b255f47938380b6d371c8af2c933a7be891
 
 class PasswordResetToken(models.Model):
     usuario = models.ForeignKey(Usuario, on_delete=models.CASCADE)
@@ -59,7 +74,10 @@ class PasswordResetToken(models.Model):
 
 class Categorias_Produtos(models.Model):
     nome = models.CharField(max_length=50, unique=True)
+<<<<<<< HEAD
     empresa = models.ForeignKey(Empresa, on_delete=models.CASCADE)
+=======
+>>>>>>> e4fd9b255f47938380b6d371c8af2c933a7be891
     
     class Meta:
         db_table = "Categorias_Produtos"
@@ -68,8 +86,13 @@ class Categorias_Produtos(models.Model):
         return self.nome
     
 class Categorias_Materia_prima(models.Model):
+<<<<<<< HEAD
     nome = models.CharField(max_length=50)
     empresa = models.ForeignKey(Empresa, on_delete=models.CASCADE)
+=======
+    nome = models.CharField(max_length=50, unique=True)
+    
+>>>>>>> e4fd9b255f47938380b6d371c8af2c933a7be891
     class Meta:
         db_table = "Categorias_Materia_prima"
 
@@ -79,7 +102,11 @@ class Categorias_Materia_prima(models.Model):
 class Unidade_medida(models.Model):
     nome = models.CharField(max_length=150, unique=True)
     sigla = models.CharField(max_length=150, unique=True)
+<<<<<<< HEAD
     tipo = models.CharField(max_length=150)
+=======
+    tipo = models.CharField(max_length=150, unique=True)
+>>>>>>> e4fd9b255f47938380b6d371c8af2c933a7be891
 
     class Meta:
         db_table = "Unidade_medida"
@@ -89,7 +116,11 @@ class Unidade_medida(models.Model):
 class Unidade_compra(models.Model):
     nome = models.CharField(max_length=150, unique=True)
     sigla = models.CharField(max_length=150, unique=True)
+<<<<<<< HEAD
     tipo = models.CharField(max_length=150)
+=======
+    tipo = models.CharField(max_length=150, unique=True)
+>>>>>>> e4fd9b255f47938380b6d371c8af2c933a7be891
 
     class Meta:
         db_table = "Unidade_compra"
@@ -139,7 +170,10 @@ class MateriaPrima(models.Model):
         db_column='categoria',
         on_delete=models.PROTECT,
     )
+<<<<<<< HEAD
     empresa = models.ForeignKey(Empresa, on_delete=models.CASCADE)
+=======
+>>>>>>> e4fd9b255f47938380b6d371c8af2c933a7be891
 
     def __str__   (self):
         return self.nome_materia_prima
@@ -171,7 +205,10 @@ class Produto(models.Model):
         on_delete=models.PROTECT,
         default='Sem Categoria',
     )
+<<<<<<< HEAD
     empresa = models.ForeignKey(Empresa, on_delete=models.CASCADE)
+=======
+>>>>>>> e4fd9b255f47938380b6d371c8af2c933a7be891
 
     class Meta:
         db_table = "Produto"
@@ -231,17 +268,26 @@ class Producao(models.Model):
 
     observacoes = models.TextField(blank=True, null=True)
     tamanho = models.CharField(max_length=50)
+<<<<<<< HEAD
     empresa = models.ForeignKey(Empresa, on_delete=models.CASCADE)
+=======
+>>>>>>> e4fd9b255f47938380b6d371c8af2c933a7be891
 
     class Meta:
         db_table = 'Producao'
 
 class Clientes(models.Model):
     nome = models.CharField(max_length=255, unique=True)
+<<<<<<< HEAD
     email = models.EmailField(unique=True)
     telefone = models.CharField(max_length=20, null=True, blank=True)
     CPF = models.CharField(max_length=14, unique=True)  # Formato típico: 000.000.000-00
     empresa = models.ForeignKey(Empresa, on_delete=models.CASCADE)
+=======
+    email = models.EmailField()
+    telefone = models.CharField(max_length=20)
+    CPF = models.CharField(max_length=14)  # Formato típico: 000.000.000-00
+>>>>>>> e4fd9b255f47938380b6d371c8af2c933a7be891
 
     class Meta:
         db_table = "Clientes"
@@ -250,6 +296,7 @@ class Clientes(models.Model):
         return self.nome
 
 class Vendas(models.Model):
+<<<<<<< HEAD
     valor_total = models.DecimalField(max_digits=8, decimal_places=2)
     cliente = models.ForeignKey(
         Clientes,  
@@ -265,11 +312,29 @@ class Vendas(models.Model):
     )
     empresa = models.ForeignKey(Empresa, on_delete=models.CASCADE)
     data_venda = models.DateTimeField(auto_now_add=True, db_index=True)  # equivale ao DEFAULT CURRENT_TIMESTAMP
+=======
+    valor = models.FloatField(db_column='Valor')
+    comprador = models.ForeignKey(
+        Clientes,  # nome do modelo relacionado
+        on_delete=models.PROTECT,
+        db_column='comprador_id',
+        related_name='vendas_por_id'
+    )
+    comprador_nome = models.ForeignKey(
+        Clientes,
+        to_field='nome',
+        on_delete=models.PROTECT,
+        db_column='comprador_nome',
+        related_name='vendas_por_nome'
+    )
+    data = models.DateTimeField(auto_now_add=True)  # equivale ao DEFAULT CURRENT_TIMESTAMP
+>>>>>>> e4fd9b255f47938380b6d371c8af2c933a7be891
 
     class Meta:
         db_table = "Vendas"
 
     def __str__   (self):
+<<<<<<< HEAD
         return f"Venda {self.id} - Comprador: {self.cliente} - Valor: {self.valor_total}"
     
 class ProdutoVenda(models.Model):
@@ -281,3 +346,6 @@ class ProdutoVenda(models.Model):
         )
     quantidade = models.IntegerField()
     valor_unitario = models.DecimalField(max_digits=8, decimal_places=2)
+=======
+        return f"Venda {self.id} - Comprador: {self.comprador_nome} - Valor: {self.valor}"
+>>>>>>> e4fd9b255f47938380b6d371c8af2c933a7be891

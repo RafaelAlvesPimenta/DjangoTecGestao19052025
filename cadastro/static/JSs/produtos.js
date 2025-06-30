@@ -1,5 +1,8 @@
 
+<<<<<<< HEAD
 /*start modal cadastro*/ 
+=======
+>>>>>>> e4fd9b255f47938380b6d371c8af2c933a7be891
 button_open_modal = document.getElementById('abrirModal')
     button_close_modal = document.getElementById('fecharModal')
     modal_new_product = document.getElementById('modalCadastro')
@@ -8,6 +11,7 @@ button_open_modal = document.getElementById('abrirModal')
     button_yes_close = document.getElementById('sim')
     button_no_close = document.getElementById('nao')
 
+<<<<<<< HEAD
     /*função abrir modal de cadastro*/
     button_open_modal.addEventListener("click", function() {
         modal_new_product.style.display = "flex";
@@ -15,12 +19,22 @@ button_open_modal = document.getElementById('abrirModal')
     });
 
     /*função fechar modal de cadastro*/
+=======
+    button_open_modal.addEventListener("click", function() {
+        modal_new_product.style.display ="flex";
+    });
+
+>>>>>>> e4fd9b255f47938380b6d371c8af2c933a7be891
     button_close_modal.addEventListener("click", function() {
         security_close_modal.forEach(modal => {
             modal.style.display = 'flex';
           });
+<<<<<<< HEAD
         button_yes_close.addEventListener("click", function () {
             document.body.classList.remove('noscroll');
+=======
+        button_yes_close.addEventListener("click", function() {
+>>>>>>> e4fd9b255f47938380b6d371c8af2c933a7be891
             security_close_modal.forEach(modal => {modal.style.display = 'none';});
             modal_new_product.style.display = "none";
         })
@@ -30,7 +44,10 @@ button_open_modal = document.getElementById('abrirModal')
 
     });
 
+<<<<<<< HEAD
     /*função de cadastro nova categoria de produto*/
+=======
+>>>>>>> e4fd9b255f47938380b6d371c8af2c933a7be891
     button_new_category = document.getElementById('button_new_category')
     form_new_category = document.getElementById('backend_form_new_category')
     button_new_category.addEventListener("click", function(){
@@ -59,12 +76,18 @@ button_open_modal = document.getElementById('abrirModal')
             preview.style.display = 'none';
         }
     });
+<<<<<<< HEAD
 /*end modal cadastro*/
 
 /*strat modal edição*/
     // Função para abrir o modal de edição
 function abrirModalEditar(botao) {
     document.body.classList.add('noscroll');
+=======
+
+    // Função para abrir o modal de edição
+function abrirModalEditar(botao) {
+>>>>>>> e4fd9b255f47938380b6d371c8af2c933a7be891
     // Obter todos os dados do produto dos atributos data-*
     const produto = {
         id: botao.getAttribute('data-id'),
@@ -104,7 +127,10 @@ function abrirModalEditar(botao) {
 
 // Função para fechar o modal de edição
 function fecharModalEditar() {
+<<<<<<< HEAD
 
+=======
+>>>>>>> e4fd9b255f47938380b6d371c8af2c933a7be891
     security_close_modal.forEach(modal => {
         modal.style.display = 'flex';
       });
@@ -117,6 +143,10 @@ function fecharModalEditar() {
     })
     // document.getElementById('modalEditar').style.display = 'none';
 }
+<<<<<<< HEAD
 /*end modal edição*/
+=======
+
+>>>>>>> e4fd9b255f47938380b6d371c8af2c933a7be891
 
 // });
